@@ -15,10 +15,10 @@ function [retmap,retvisited,retsteps] = dfs( mapfile,startlocation,targetlocatio
     steps = startlocation;
     [retvisited,retsteps] = recursive_search(startlocation,targetlocation,retvisited,mapMatrix,steps);
 end
-%%TODO:
-%%figure out how to store steps into a vector cuz recursion makes my life harder
-%%also figure out why retvisited has no value either
+
+%This function will be recursively run until the target location is reached
 function [v,s]  = recursive_search(currentlocation,targetlocation,visitedMatrix,mapMatrix,retsteps)
+    %if target location is reached, return to dfs function with outputs
 	if currentlocation == targetlocation
 		%goal found
 		visitedMatrix(currentlocation(1),currentlocation(2)) = 1;
@@ -26,25 +26,21 @@ function [v,s]  = recursive_search(currentlocation,targetlocation,visitedMatrix,
 		s = retsteps;
 		disp('END')
 		return;
-
+    %else keep searching through the maze applying our direction priorities
 	else
 		visitedMatrix(currentlocation(1),currentlocation(2)) = 1;
-		for i = 1:4
-			nextlocation = go(currentlocation,i);
-            % disp('here0')
-			if mapMatrix(nextlocation(1),nextlocation(2)) == 0
-				% disp('here1')
-				if visitedMatrix(nextlocation(1),nextlocation(2)) == 0
-					% disp('here2')
+		for i = 1:4 %for the four different possible directions
+			nextlocation = nextBlock(currentlocation,i);
+			if mapMatrix(nextlocation(1),nextlocation(2)) == 0 %If the next block is not a wall
+				if visitedMatrix(nextlocation(1),nextlocation(2)) == 0 %If the next block has not been visited before
 					retsteps = [retsteps;nextlocation(1) nextlocation(2)];
 					disp(nextlocation)	
 					[visitedMatrix,retsteps] = recursive_search(nextlocation,targetlocation,visitedMatrix,mapMatrix,retsteps);
 					v = visitedMatrix;
 					s = retsteps;
                     if visitedMatrix(targetlocation(1),targetlocation(2)) == 1
-                        return 
-                    end
-                     
+                        return; 
+                    end  
                 end
             end 
         end
@@ -54,35 +50,21 @@ function [v,s]  = recursive_search(currentlocation,targetlocation,visitedMatrix,
 end 
 
 
-
-function nextlocation = go(currentlocation,direction)
+%This function is run to find the next block to visited with specific
+%direction priorities: North, East, South, West
+function nextlocation = nextBlock(currentlocation,direction)
 	nextlocation = currentlocation;
-    if nextlocation(1) > 1
-        if direction == 1 %%north
-            nextlocation(1) = nextlocation(1) - 1;
-        end
-    end
-
-    if nextlocation(2) > 1 
-        if direction == 3 %%west
-            nextlocation(2) = nextlocation(2) - 1;
-        end
-    end 
-
-   	if direction == 2 %%south
-            nextlocation(1) = nextlocation(1) + 1;
-    end
-
-    if direction == 4 %%east
-            nextlocation(2) = nextlocation(2) + 1;
-    
-    end
+    if direction == 1     %%north
+        nextlocation(1) = nextlocation(1) - 1;   
+    elseif direction == 4 %%west
+        nextlocation(2) = nextlocation(2) - 1;
+    elseif direction == 3 %%south
+        nextlocation(1) = nextlocation(1) + 1;
+    elseif direction == 2 %%east
+        nextlocation(2) = nextlocation(2) + 1;
+    end  
 end
     
-       
-
-
-
 function placestep(position,i)
 % This function will plot a insert yellow rectangle and also print a number in this rectangle. Use with plotmap/viewmap. 
 position = [16-position(1) position(2)];
