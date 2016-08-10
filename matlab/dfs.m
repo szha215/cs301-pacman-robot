@@ -13,6 +13,18 @@ function [retmap,retvisited,retsteps] = dfs(mapfile,startlocation,targetlocation
     retmap = mapMatrix;
     retvisited = zeros(msize(1),msize(2));
     steps = startlocation;
+    if startlocation(1) < 1 || startlocation(2) < 1 || startlocation(1) > msize(1) || startlocation(2) > msize(2)
+        error('Please enter a starting location that is not outside the map boundaries'); 
+    end
+    if (mapMatrix(startlocation(1),startlocation(2)) == 1)
+        error('Please enter a starting location that is not in the wall'); 
+    end
+    if targetlocation(1) < 1 || targetlocation(2) < 1 || targetlocation(1) > msize(1) || targetlocation(2) > msize(2)
+        error('Please enter a target location that is not outside the map boundaries'); 
+    end
+    if (mapMatrix(targetlocation(1),targetlocation(2)) == 1)
+        error('Please enter a target location that is not in the wall'); 
+    end
     [retvisited,retsteps] = recursive_search(startlocation,targetlocation,retvisited,mapMatrix,steps);
 end
 
