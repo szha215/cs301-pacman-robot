@@ -11,7 +11,7 @@ function [retmap,retvisited,retsteps] = dfs(mapfile,startlocation,targetlocation
     mapMatrix = map_convert(mapfile);
     msize = size(mapMatrix);
     retmap = mapMatrix;
-    retvisited = zeros(msize(1),msize(2));
+    retvisited = ones(msize(1),msize(2));
     steps = startlocation;
     if startlocation(1) < 1 || startlocation(2) < 1 || startlocation(1) > msize(1) || startlocation(2) > msize(2)
         error('Please enter a starting location that is not outside the map boundaries'); 
@@ -33,24 +33,24 @@ function [v,s]  = recursive_search(currentlocation,targetlocation,visitedMatrix,
     %if target location is reached, return to dfs function with outputs
 	if currentlocation == targetlocation
 		%goal found
-		visitedMatrix(currentlocation(1),currentlocation(2)) = 1;
+		visitedMatrix(currentlocation(1),currentlocation(2)) = 0;
 		v = visitedMatrix;
 		s = retsteps;
 		disp('END')
 		return;
     %else keep searching through the maze applying our direction priorities
 	else
-		visitedMatrix(currentlocation(1),currentlocation(2)) = 1;
+		visitedMatrix(currentlocation(1),currentlocation(2)) = 0;
 		for i = 1:4 %for the four different possible directions
 			nextlocation = nextBlock(currentlocation,i,mapMatrix);
-            if visitedMatrix(nextlocation(1),nextlocation(2)) == 0 %If the next block has not been visited before
+            if visitedMatrix(nextlocation(1),nextlocation(2)) == 1 %If the next block has not been visited before
                 if mapMatrix(nextlocation(1),nextlocation(2)) == 0 %If the next block is not a wall
 					retsteps = [retsteps;nextlocation(1) nextlocation(2)];
 					disp(nextlocation)	
 					[visitedMatrix,retsteps] = recursive_search(nextlocation,targetlocation,visitedMatrix,mapMatrix,retsteps);
 					v = visitedMatrix;
 					s = retsteps;
-                    if visitedMatrix(targetlocation(1),targetlocation(2)) == 1
+                    if visitedMatrix(targetlocation(1),targetlocation(2)) == 0
                         return; 
                     end  
                 end
@@ -76,13 +76,4 @@ function nextlocation = nextBlock(currentlocation,direction,mapMatrix)
     elseif direction == 2 && nextlocation(2) ~= msize(2) %%east
         nextlocation(2) = nextlocation(2) + 1;
     end  
-end
-    
-function placestep(position,i)
-% This function will plot a insert yellow rectangle and also print a number in this rectangle. Use with plotmap/viewmap. 
-position = [16-position(1) position(2)];
-position = [position(2)+0.1 position(1)+0.1];
-rectangle('Position',[position,0.8,0.8],'FaceColor','y');
-c = sprintf('%d',i);
-text(position(1)+0.2,position(2)+0.2,c,'FontSize',10);
 end
