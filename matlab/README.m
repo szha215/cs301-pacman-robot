@@ -6,13 +6,13 @@
 
 %or else
 
-[m]=map_convert('map_1.txt');
+[m]=map_convert('map_8.txt');
 plotmap(m);
 %Here   'm' is the map file returned as a matrix
 
 
 % Your simulations will use this structure
-[m,v,s]=dfs('map_1.txt',[8,2],[2,2]);
+[m,v,s]=dfs('map_8.txt',[2,17],[2,2]);
 %Here   'm' is the map file returned as a matrix
 %       'v' is a matrix that shows which cells have been visited, '0' means
 %       visited, '1' means not visited
@@ -22,4 +22,5 @@ plotmap(m);
 
 %To view the path determined above use 
 plotmap(m,s);
+
 
