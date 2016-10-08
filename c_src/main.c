@@ -14,10 +14,18 @@
 #include <stdlib.h>
 
 #include "project.h"
-#include "PID_control.h"
 #include "RF_Handler.h"
-#include "FSM.h"
 #include "motor_control.h"
+#include "FSM.h"
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//TECH TEST 2 PARAMETERS
+//DEFINED DISTANCE(CM) AND VELOCITY(CM/S)
+#define PREDEF_DISTANCE 100
+#define PREDEF_VELOCTIY 15
+
+
 
 
 #define TOGGLE_LED LED_Write(~LED_Read())
@@ -26,7 +34,7 @@
 
 //* ========================================
 #define PACKETSIZE 32
-#define RXSTRINGSIZE 255
+//#define RXSTRINGSIZE 255
 
 #define FALSE 0
 #define TRUE 1
@@ -42,21 +50,11 @@
 
 #define SOP 0xaa
 char entry[BUF_SIZE];
-//-------------
-//PID vars
-#define DESIRED_COUNTS 32
-uint16 base_increment_val = 25;
-pid_params* pid_controller_m1;
-pid_params* pid_controller_m2;
-uint8 pwm_start =0;
-uint8 pwm_stop =0;
-
 
 //-------------
 //ISR vars
 uint8 start = 0;
-uint8 compared = 0;
-uint8 timer_50ms_count = 0;
+uint8 timer_50ms_counts= 0;
 
 //-------------
 //DIP readings
@@ -70,21 +68,18 @@ uint8 s_l = 0;
 uint8 s_r = 0;
 uint8 s_m = 0;
 uint8 s_b = 0;
-#define NOT_TURNING 0
-#define LEFT_TURN 1
-#define RIGHT_TURN 2
-#define ABOUT_TO_TURN 3
-uint8 TURN_DIR = NOT_TURNING;
+
 
 
 int i = 0;
 uint8 int_en = 0;
 uint8 button_flag = 0;
 //-------------
-//PWM vars
+//PWM varss
+pid_params* pid_controller_m1;
+pid_params* pid_controller_m2;
 
-uint8 compare_val_m1 = 215;
-uint8 compare_val_m2 = 230;
+
 
 //-------------
 //Quad_dec vars 
@@ -94,11 +89,6 @@ int16 quad_dec_m2 = 0;
 
 //* ========================================
 // RF globals
-data_main* system_state;
-uint8 indexCount = 0;
-uint8 endCount = 0;
-char rxString[RXSTRINGSIZE];
-uint8 rx_recieved = 0;
 
 //-------------
 //helper functions
@@ -126,46 +116,9 @@ CY_ISR(adcISR){
 
 //=========================================
 
-CY_ISR(rxISR){
-    char outChar = UART_GetChar();
-    if (rx_recieved == 0){
-        if (outChar == '#'){
-            rxString[0] = outChar;
-        }else if (rxString[0] != 0){
-            rxString[indexCount] = outChar;
-            indexCount += 1;
-            if (outChar == ']'){
-                endCount++;
-                if (endCount >= 4){
-                    endCount = 0;
-                    rx_recieved = 1;
-                }
-            }
-        }
-    }
-    
-}
 
-CY_ISR(timer_isr){
-    
-	if(start == 0){
-		PWM_M2_WriteCompare(STOP);
-		PWM_M1_WriteCompare(STOP);
-        //dip_val = dip_read();
-        //change the start value depending on the dip switch pos???
-		start = 1;
-	}
-    
-    quad_dec_m1 = QuadDec_M1_GetCounter();
-    quad_dec_m2 = QuadDec_M2_GetCounter();
-    
-    QuadDec_M1_SetCounter(0);
-    QuadDec_M2_SetCounter(0);
-    compared = 1;
-    
-    timer_50ms_count++;
 
-}
+
 
 CY_ISR(isr_s_timer){
     if (start == 1){
@@ -182,89 +135,71 @@ CY_ISR(isr_s_timer){
 
 int main()
 {
-	uint8 dip_val = 0x00;
+	
+    //CyDelay(1000);
+    
+    uint8 dip_val = 0x00;
 
-
-
-	CyDelay(1000);
+	
     CyGlobalIntEnable;
 
-
-    //=========================
-    // USB and UART initialize
-    //USBUART_Start(0,USBUART_5V_OPERATION);
-    //UART_Start();
+   
     
-    // used to print to PuTTY
     //char tempString[BUF_SIZE];
-    // rf and rfISR initialize
-    //system_state = rf_Handler_init();
-    
-
-    //=========================
-    //ADC
-    
-    //float v_bat = 0.0;
-    //=========================
-
-
-
-    //QuadDec_M1_Start();
-    //QuadDec_M2_Start();
-    
-    //pid_controller_m1 = pid_init(0.05,DESIRED_COUNTS);
-   // pid_controller_m2 = pid_init(0.05,DESIRED_COUNTS);
-
-    //CyDelay(1000);
-    Timer_TS_Start();
-    //Timer_1_Start();
-    //PWM_M2_Start();
-    //PWM_M1_Start();
-    
-    isr_TS_StartEx(timer_isr);
-    //isr_s_timer_StartEx(isr_s_timer);
-    // ISR_S_FL_StartEx(isr_s_fl);
-    // ISR_S_FR_StartEx(isr_s_fr);
-    // ISR_S_L_StartEx(isr_s_l);
-    // ISR_S_R_StartEx(isr_s_r);
-    // ISR_S_M_StartEx(isr_s_m);
-    // ISR_S_B_StartEx(isr_s_b);
-    //sensor_init();
-    
-    //isr_button_StartEx(isr_button);
     
     dip_val = dip_read();
+    
 
-   	//dip_val = 0b00001110;
-
-    if (dip_val == 1){
+    if(dip_val == 2){
+        CyDelay(1000);
         FSM();
     }
 
-    switch(dip_val){
-    	// case 8:	// open loop
-
-    	// 	break;
-
-    	// case 4:
-
-    	// 	break;
-
-    	// OFF ON ON ON
-    	case 14:	// Maze
-    		//FSM();
-    		break;
-    }
     
-    
-    
-    
-    
+    data_main* RF_data;
+    RF_data = rf_Handler_init();
+    USBUART_Start(0,USBUART_5V_OPERATION);
+    char tempString[BUF_SIZE];
+    uint8 vel;
+    uint16 distance;
     // Something critical happened if the program gets here
     for(;;)
     {   
-        TOGGLE_LED;
-        CyDelay(500);
+        // TOGGLE_LED;
+        // CyDelay(500);
+        // check_RF(RF_data);
+        // if(is_handled()){
+        //     TOGGLE_LED;
+        //     sprintf(tempString,"\r\n ~ rssi: %d\r\n", RF_data->rssi); usbPutString(tempString);
+        //     sprintf(tempString," ~ index: %d\r\n", RF_data->index); usbPutString(tempString);
+            
+        //     sprintf(tempString," ~ robot x pos: %d\r\n", RF_data->robot_xpos); usbPutString(tempString);
+        //     sprintf(tempString," ~ robot y pos: %d\r\n", RF_data->robot_ypos); usbPutString(tempString);
+        //     sprintf(tempString," ~ robot angle: %d\r\n\n", RF_data->robot_orientation); usbPutString(tempString);
+
+        //     sprintf(tempString," ~ ghost0 x pos: %d\r\n", RF_data->g0_xpos); usbPutString(tempString);
+        //     sprintf(tempString," ~ ghost0 y pos: %d\r\n", RF_data->g0_ypos); usbPutString(tempString);
+        //     sprintf(tempString," ~ ghost0 speed: %d\r\n", RF_data->g0_speed); usbPutString(tempString);
+        //     sprintf(tempString," ~ ghost0 direction: %d\r\n", RF_data->g0_direction); usbPutString(tempString);
+
+        //     sprintf(tempString," ~ ghost1 x pos: %d\r\n", RF_data->g1_xpos); usbPutString(tempString);
+        //     sprintf(tempString," ~ ghost1 y pos: %d\r\n", RF_data->g1_ypos); usbPutString(tempString);
+        //     sprintf(tempString," ~ ghost1 speed: %d\r\n", RF_data->g1_speed); usbPutString(tempString);
+        //     sprintf(tempString," ~ ghost1 direction: %d\r\n", RF_data->g1_direction); usbPutString(tempString);
+
+        //     sprintf(tempString," ~ ghost2 x pos: %d\r\n", RF_data->g2_xpos); usbPutString(tempString);
+        //     sprintf(tempString," ~ ghost2 y pos: %d\r\n", RF_data->g2_ypos); usbPutString(tempString);
+        //     sprintf(tempString," ~ ghost2 speed: %d\r\n", RF_data->g2_speed); usbPutString(tempString);
+        //     sprintf(tempString," ~ ghost2 direction: %d\r\n\n", RF_data->g2_direction); usbPutString(tempString);
+        //     clear_handled();
+        // }
+        vel = conv_velocity(PREDEF_VELOCTIY);
+        distance = conv_distance(PREDEF_DISTANCE);
+        sprintf(tempString,"\r\n ~ Velocity: %d\r\n",vel);
+        usbPutString(tempString);
+        sprintf(tempString,"\r\n ~ Distance: %d\r\n",distance);
+        usbPutString(tempString);
+
     }
 }
 
