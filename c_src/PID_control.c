@@ -13,21 +13,24 @@
 #include "PID_control.h"
 
 void pid_calc_output(pid_params *params,uint16 current_val){
+	float temp_output;
 	params->measured_val = current_val;
 	params->error = params->set_val - params->measured_val;
 	params->integral += params->error * params->dt;
 	params->derivative = (params->error - params->prev_error)/params->dt;
-	params->output = params->K_p * params->error + K_i * params->integral + K_d * params->derivative;
+	params->p_output = params->K_p * params->error;
+	params->i_output = K_i * params->integral * INTEGRAL_DECAY;
+	params->d_output = K_d * params->derivative;
 	params->prev_error = params->error;
-}
+	temp_output = params->p_output + params->i_output + params->d_output;
+	// if(temp_output > params->max){
+	// 	temp_output = params->max;
+	// }
+	// else if(temp_output < params->min){
+	// 	temp_output = params->min;
+	// }
 
-void pid_calc_p_output(pid_params *params,uint16 current_val){
-	params->measured_val = current_val;
-	params->error = params->set_val - params->measured_val;
-    params->integral += params->error * params->dt;
-    params->derivative = (params->error - params->prev_error)/params->dt;
-    params->prev_error = params->error;
-	params->p_output = params->K_p * params->error + K_i * params->integral + K_d * params->derivative;
+	params->output = temp_output;
 }
 
 
@@ -44,7 +47,26 @@ pid_params *pid_init(float dt,uint16 set_val){
 	params->derivative = 0;
 	params->output = 0;
 	params->p_output = 0;
+	params->i_output = 0;
+	params->d_output = 0;
 	params->measured_val = 0;
+
+
+
+	
+	// if(set_val - TOLERANCE >= 128){
+	// 	params->min = set_val - TOLERANCE;
+	// }
+	// else{
+	// 	params->min = 128;
+	// }
+
+	// if(set_val + TOLERANCE <= 255){
+	// 	params->max = set_val + TOLERANCE;
+	// }
+	// else{
+	// 	params->max = 255;
+	// }
 	return params;
 }
 

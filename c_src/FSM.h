@@ -10,56 +10,65 @@
  * ========================================
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include "project.h"
-#include "motor_control.h"
-
-#define IN_LINE 1
-#define OUT_LINE 0
 
 #ifndef FSM_H
 #define FSM_H
 
-extern uint8 button_flag;
-    
-    
-extern uint8 s_fl;
-extern uint8 s_fr;
-extern uint8 s_l;
-extern uint8 s_r;
-extern uint8 s_m;
-extern uint8 s_b;
+#include <stdio.h>
+#include <stdlib.h>
+#include "project.h"
+#include "motion_actuator.h"
+#include "motor_control.h"
+#include "RF_handler.h"
 
 
+
+
+//#define ANGLE_THRESHOLD 20
+
+
+
+
+
+uint8 pid_start;
+
+uint8 rf_start;
 
 struct State;
-typedef void state_logic(struct State*);
+typedef void state_logic(struct State*,uint8 flag);
 
 struct State{
     state_logic* next_state;
+    uint8 current_flag;
 };
 
-state_logic unknown, straight, front_out, turn_left, turn_right;
+//state_logic unknown, straight, front_out, turn_left, turn_right;
 
 
-void init_fsm(void);
-void start_sensor_isr();
+void init_FSM();
 void FSM();
 
 //void start(struct State* state);
-void unknown(struct State* state);
-void straight(struct State* state);
-void front_out(struct State* state);
-void intersection(struct State* state);
+void unknown(struct State* state,uint8 flag);
+void straight(struct State* state,uint8 flag);
+void front_out(struct State* state,uint8 flag);
+void corner(struct State* state,uint8 flag);
+void t_intersection_front(struct State* state,uint8 flag);
+void t_intersection_left(struct State* state,uint8 flag);
+void t_intersection_right(struct State* state,uint8 flag);
+void x_intersection(struct State* state,uint8 flag);
 
-void turn_left(struct State* state);
-void turn_right(struct State* state);
+void turn_left_prep(struct State* state,uint8 flag);
+void turn_right_prep(struct State* state,uint8 flag);
+void turn_left(struct State* state,uint8 flag);
+void turn_right(struct State* state,uint8 flag);
 
-void adjust_right(struct State* state);
-void adjust_left(struct State* state);
+void adjust_right(struct State* state,uint8 flag);
+void adjust_left(struct State* state,uint8 flag);
 
 
+uint8 get_pid_start();
+void set_pid_start(uint8 start);
 
 
 
