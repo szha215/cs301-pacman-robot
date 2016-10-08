@@ -15,7 +15,7 @@
 void printMap(int posX, int posY);
 void clrscr();
 void waitFor (unsigned int secs);
-
+int map_visited[15][19];
 
 int main()
 {
@@ -24,6 +24,20 @@ int main()
 	int posX = 1;
 	int posY = 1;
 	int direction = NORTH;
+	int i, j;
+	
+
+	memcpy(map_visited, map, sizeof(int) * 15 * 19);
+	for (i = 0; i < 14; i++){
+		for (j = 0; j < 19; j++){
+			if (map_visited[i][j] == 0){
+				map_visited[i][j] = 2;	// not visited
+			}
+		}
+	}
+
+
+
 	printMap(posX, posY);
 
 	while (1){
@@ -82,7 +96,7 @@ int main()
 				direction = EAST;
 			}	
 		}
-		waitFor(1);
+		//waitFor(1);
 	}
     return 0;
 }
@@ -93,9 +107,17 @@ void printMap(int posX, int posY){
 	for (i = 0; i < 15; i++){ // y
 		for (j = 0; j < 19; j++){ // x
 			if (posX == j && posY == i){
-				printf("%c", (map[i][j] == 0)?'o':'X');
-			}else{
-				printf("%c", (map[i][j] == 1)?'#':' ');
+				printf("%c", 'o');
+				map_visited[i][j] = 3;
+			} else {
+				if (map_visited[i][j] == 1){
+					printf("%c", '#');
+				} else if (map_visited[i][j] == 2) {
+					printf("%c", 'x');
+				} else {
+					printf("%c", ' ');
+				}
+				
 			}
 		}
 		printf("\n");
