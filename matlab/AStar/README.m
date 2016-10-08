@@ -12,7 +12,11 @@ plotmap(m);
 
 
 % Your simulations will use this structure
+<<<<<<< HEAD:matlab/README.m
 [m,v,s]=dfs('map_8.txt',[2,17],[2,2]);
+=======
+[m,v,s]=dfs('map_1.txt',[14,1],[2,2]);
+>>>>>>> 9726234c61401fcd1e6c5f4e44ac05262edb2a16:matlab/AStar/README.m
 %Here   'm' is the map file returned as a matrix
 %       'v' is a matrix that shows which cells have been visited, '0' means
 %       visited, '1' means not visited
