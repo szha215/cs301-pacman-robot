@@ -1,4 +1,4 @@
-/* ========================================
+ /* ========================================
  *
  * Copyright YOUR COMPANY, THE YEAR
  * All Rights Reserved
@@ -12,110 +12,94 @@
 
 #include "FSM.h"
 
-CY_ISR(isr_s_fl){
-    s_fl = S_FL_Read();
-    s_fr = S_FR_Read();
-}
 
-CY_ISR(isr_s_fr){
-    s_fr = S_FR_Read();
-    s_fl = S_FL_Read();
-}
 
-CY_ISR(isr_s_l){
-    s_l = S_L_Read();
-    s_r = S_R_Read();
-}
-
-CY_ISR(isr_s_r){
-    s_r = S_R_Read();
-    s_l = S_L_Read();
-}
-
-CY_ISR(isr_s_b){
-    s_b = S_B_Read();
-}
-
-CY_ISR(isr_s_m){
-    s_m = S_M_Read();
-}
-
-CY_ISR(isr_button){
-    button_flag = 1;
-}
 
 void init_FSM(){
-    init_motor_control();
-    start_sensor_isr();
+    init_motion_actuator();
+    set_pid_start(0);
 }
 
-void start_sensor_isr(){
-    ISR_S_FL_StartEx(isr_s_fl);
-    ISR_S_FR_StartEx(isr_s_fr);
-    ISR_S_L_StartEx(isr_s_l);
-    ISR_S_R_StartEx(isr_s_r);
-    ISR_S_M_StartEx(isr_s_m);
-    ISR_S_B_StartEx(isr_s_b);
-}
+
 
 void FSM(){
-    struct State CS = {straight};
-
+    struct State CS;
+    struct motion_state motion_CS;
+    motion_CS.next_state = motion_straight;
+    CS.next_state = straight;
     init_FSM();
-
+   
+    
     // CS <= NS; state updater
     for(;;){
-        CS.next_state(&CS);
+        motion_CS.next_state(&motion_CS,CS.current_flag);
+        CS.next_state(&CS,motion_CS.current_flag);
+       
     }
 }
 
 
 
-void unknown(struct State* state){
+
+
+void unknown(struct State* state,uint8 flag){
     m_stop();
-	LED_Write(1);
+
 }
 
-void straight(struct State* state){
-    m_straight_slow();
-    
-    if (s_fl == IN_LINE && s_fr == IN_LINE){
-        state->next_state = straight;
-    } else if (s_fl == OUT_LINE && s_fr == IN_LINE) {
-        state->next_state = adjust_right;
-    } else if (s_fr == OUT_LINE && s_fl == IN_LINE) {
-        state->next_state = adjust_left;
-    } else if (s_fr == OUT_LINE && s_fl == OUT_LINE) {
-        state->next_state = front_out;
+void straight(struct State* state,uint8 flag){
 
-    }
     
 }
+
 
 // Corner or end T, where front 2 sensors go out
-void front_out(struct State* state){
-    LED_Write(1);
+void front_out(struct State* state,uint8 flag){
+    //LED_Write(1);
     m_straight_slow();
 
-    state->next_state = intersection;
+    state->next_state = corner;
+    // if(s_l == IN_LINE && s_r == IN_LINE){
+    //     state->next_state = t_intersection_front;
+    // } else if (s_l == IN_LINE || s_r == IN_LINE){
+    //     state->next_state = corner;
+    // } else {
+    //     state->next_state = front_out;
+    // }
     
 }
 
-// Cross intersection or side T
-void intersection(struct State* state){
+// Corner
+void corner(struct State* state,uint8 flag){
 
     if(s_l == IN_LINE && s_r == OUT_LINE){
         state->next_state = turn_left;
-    }
-    else if(s_l == OUT_LINE && s_r == IN_LINE){
+    } else if (s_l == OUT_LINE && s_r == IN_LINE){
         state->next_state = turn_right;
-    }
-    else{
+    } else {
         state->next_state = front_out;
     }
 }
+void t_intersection_front(struct State* state,uint8 flag){
+    m_stop();
+    
+}
 
-void turn_left(struct State* state){
+void t_intersection_left(struct State* state,uint8 flag){
+    
+}
+
+void t_intersection_right(struct State* state,uint8 flag){
+    
+}
+
+void x_intersection(struct State* state,uint8 flag){
+    LED_Write(1);
+
+    state->next_state = straight;
+}
+
+void turn_left(struct State* state,uint8 flag){
     m_turn_left();
 
     if (s_fr == IN_LINE && s_fl == IN_LINE){
@@ -126,7 +110,18 @@ void turn_left(struct State* state){
     }
 }
 
-void turn_right(struct State* state){
+void turn_left_prep(struct State* state,uint8 flag){
+    m_turn_left();
+
+    if (s_fl == OUT_LINE){
+        state->next_state = turn_left;
+     //   state->turned = 1;
+    } else {
+        state->next_state = turn_left_prep;
+    }
+}
+
+void turn_right(struct State* state,uint8 flag){
     m_turn_right();
 
     if(s_fr == IN_LINE && s_fl == IN_LINE){
@@ -137,7 +132,7 @@ void turn_right(struct State* state){
     }
 }
 
-void adjust_right(struct State* state){
+void adjust_right(struct State* state,uint8 flag){
     m_adjust_right();
 
     if (s_fl == IN_LINE && s_fr == IN_LINE){
@@ -152,7 +147,7 @@ void adjust_right(struct State* state){
 
 }
 
-void adjust_left(struct State* state){
+void adjust_left(struct State* state,uint8 flag){
     m_adjust_left();
 
     if (s_fl == IN_LINE && s_fr == IN_LINE){
@@ -170,6 +165,13 @@ void adjust_left(struct State* state){
 
 
 
+uint8 get_pid_start(){
+    return pid_start;
+}
+
+void set_pid_start(uint8 start){
+    pid_start = start;
+}
 
 
 
