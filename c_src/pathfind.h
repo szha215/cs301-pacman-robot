@@ -18,7 +18,7 @@
 #include "project.h"
 #include "Astar.h"
 
-//#include "map.h"
+#include "map.h"
 
 #define MAP_WIDTH 19
 #define MAP_HEIGHT 15
