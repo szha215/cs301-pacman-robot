@@ -15,17 +15,22 @@
 int printMap(int posX, int posY);
 void clrscr();
 void waitFor (unsigned int secs);
+<<<<<<< HEAD
 void protocol_01();
 void protocol_02();
 
 int posX = 1;
 int posY = 1;
 int direction = NORTH;
+=======
+int map_visited[15][19];
+>>>>>>> cb69989e7b8fafc9c7f9ddb6ae9f10312d8d2010
 
 int main()
 {
 	// y = 0 ~ 14
 	// x = 0 ~ 18
+<<<<<<< HEAD
 	int prot = 1;
 	int wait = 0;
 	clrscr();
@@ -33,6 +38,24 @@ int main()
 	scanf("%d", &prot);
 	printf("Wait? (1 = Yes): ");
 	scanf("%d", &wait);
+=======
+	int posX = 1;
+	int posY = 1;
+	int direction = NORTH;
+	int i, j;
+	
+
+	memcpy(map_visited, map, sizeof(int) * 15 * 19);
+	for (i = 0; i < 14; i++){
+		for (j = 0; j < 19; j++){
+			if (map_visited[i][j] == 0){
+				map_visited[i][j] = 2;	// not visited
+			}
+		}
+	}
+
+
+>>>>>>> cb69989e7b8fafc9c7f9ddb6ae9f10312d8d2010
 
 	printMap(posX, posY);
 
@@ -50,10 +73,14 @@ int main()
 		}else if (prot == 2){
 			protocol_02();
 		}
+<<<<<<< HEAD
 		if (wait == 1){
 			waitFor(1);
 		}
 		i++;
+=======
+		//waitFor(1);
+>>>>>>> cb69989e7b8fafc9c7f9ddb6ae9f10312d8d2010
 	}
 	printf("Time elapsed: %d min\n", (i/60));
 	printf("Number of food remaining: %d\n", food);
@@ -73,6 +100,7 @@ int printMap(int posX, int posY){
 	for (i = 0; i < 15; i++){ // y
 		for (j = 0; j < 19; j++){ // x
 			if (posX == j && posY == i){
+<<<<<<< HEAD
 				printf("%c", (map[i][j] != 1)?'o':'X');
 			}else{
 				if (map[i][j] == 1){
@@ -83,6 +111,19 @@ int printMap(int posX, int posY){
 				} else {
 					printf("%c",' ');
 				}
+=======
+				printf("%c", 'o');
+				map_visited[i][j] = 3;
+			} else {
+				if (map_visited[i][j] == 1){
+					printf("%c", '#');
+				} else if (map_visited[i][j] == 2) {
+					printf("%c", 'x');
+				} else {
+					printf("%c", ' ');
+				}
+				
+>>>>>>> cb69989e7b8fafc9c7f9ddb6ae9f10312d8d2010
 			}
 		}
 		printf("\n   ");
