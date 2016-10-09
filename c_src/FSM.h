@@ -35,7 +35,7 @@ uint8 pid_start;
 uint8 rf_start;
 
 struct State;
-typedef void state_logic(struct State*,uint8 flag);
+typedef void state_logic(struct State*,uint8 flag,uint8 decision_input);
 
 struct State{
     state_logic* next_state;
@@ -49,23 +49,13 @@ void init_FSM();
 void FSM();
 
 //void start(struct State* state);
-void unknown(struct State* state,uint8 flag);
-void straight(struct State* state,uint8 flag);
-void front_out(struct State* state,uint8 flag);
-void corner(struct State* state,uint8 flag);
-void t_intersection_front(struct State* state,uint8 flag);
-void t_intersection_left(struct State* state,uint8 flag);
-void t_intersection_right(struct State* state,uint8 flag);
-void x_intersection(struct State* state,uint8 flag);
+void unknown(struct State* state,uint8 flag,uint8 decision_input);
+void straight(struct State* state,uint8 flag,uint8 decision_input);
 
-void turn_left_prep(struct State* state,uint8 flag);
-void turn_right_prep(struct State* state,uint8 flag);
-void turn_left(struct State* state,uint8 flag);
-void turn_right(struct State* state,uint8 flag);
+void turn_left(struct State* state,uint8 flag,uint8 decision_input);
+void turn_right(struct State* state,uint8 flag,uint8 decision_input);
 
-void adjust_right(struct State* state,uint8 flag);
-void adjust_left(struct State* state,uint8 flag);
-
+void turn_around(struct State* state,uint8 flag,uint8 decision_input);
 
 uint8 get_pid_start();
 void set_pid_start(uint8 start);

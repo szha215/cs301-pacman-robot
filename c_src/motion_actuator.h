@@ -10,7 +10,8 @@
  * ========================================
 */
 /* [] END OF FILE */
-
+#ifndef MOTION_ACUTATOR
+#define MOTION_ACUTATOR
 #include <stdio.h>
 #include <stdlib.h>
 #include "project.h"
@@ -56,3 +57,6 @@ void motion_straight(struct motion_state* m_state,uint8 flag);
 void motion_adjust_left(struct motion_state* m_state,uint8 flag);
 void motion_adjust_right(struct motion_state* m_state,uint8 flag);
 void motion_stop(struct motion_state* m_state,uint8 flag);
+
+
+#endif
