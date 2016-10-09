@@ -12,48 +12,71 @@
 
 #include "Astar.h"
 
-uint8 astar(int *map, short *route, short start, short destination){
-	short width = 19;
+short astar(int *map, short width, short height, short *route, short start, short destination){
 	short *open, *closed, *parent, *g_cost;
 	short o_count, c_count, p_count;
 	short current;
 	int i, j;
 
-	printf("size of map = %i\n", sizeof(map[0]));
-	parent = (short*)malloc(285 * sizeof(short));
+	printf("size of map = %i\n\n", sizeof(short));
+
 	open = (short*)malloc(285 * sizeof(short));
 	closed = (short*)malloc(285 * sizeof(short));
+	parent = (short*)malloc(285 * sizeof(short));
 	g_cost = (short*)malloc(285 * sizeof(short));
 
 	init_astar(open, closed, parent, g_cost, 285);
 
-	printf("========MAP========\n");
+	printf("========MAP========\n\n");
 	for (i = 0; i < 15; i++){
 		for (j = 0; j < 19; j++){
-			printf("%i", *(map + i*19 + j));
+			printf("%c", *(map + i*19 + j) == 0? ' ':'#');
 		}
 		printf("\n");
 	}
-	printf("===================\n");
-	for (i = 0; i < 5; i++){
-		printf("main: %i\n", *(open+i));
-	}
+	printf("\n===================\n\n");
 
 
+	/* Each iteration should contain:
+	1. Find neighbours of current, store in open
+	2. For each open node, calculate F cost
+	3. Store current node location into open node for parent
+	4. Change current node to node with lowest F cost
+	5. Remove new current node from open
+	6. Add new current node to closed - same as open????
 
-	// STEP 1
-	
+	7. Repeat until current = destination
+	8. Trace back using parent until start
+	9. Flip traceback array (route)
+	10. Store route with memcpy
+	*/
+
 	*(open + start) = 1;
 	o_count++;
 	*(g_cost + start) = 0;
 
-	current = next_current(open, g_cost, destination, 285);
-	printf("%i\n", current);
+	while (!is_empty(open, 285)){
 
+
+
+		break;
+	}
+
+	current = next_current(open, g_cost, destination, 285);
+	printf("initial current = %i\n", current);
+	add_closed(closed, current);
+	printf("closed [start] = %i\n", *(closed+start));
+
+
+
+	free(parent);
+	free(open);
+	free(closed);
+	free(g_cost);
 }
 
 static short next_current(short *open, short *g_cost, short destination, short size){
-	short f_cost_min = 9999;
+	short f_cost_min = SHRT_MAX;	// 32767
 	short f_cost = 0;
 	short nextCurrent = 0;
 
@@ -61,20 +84,19 @@ static short next_current(short *open, short *g_cost, short destination, short s
 	short nextCurrentY = 0;
 	short prevCurrentX = 0;
 	short prevCurrentY = 0;
-	short destinationX = 0;
-	short destinationY = 0;
+	short destinationX = destination % 19;
+	short destinationY = destination / 19;
 
 	short prev_manhattan = 0;
 	short curr_manhattan = 0;
 	short i;
 
+	printf("short MAX = %i\n", f_cost_min);
 
 	for (i = 0; i < size; i++){
 		if (*(open + i) == 1){
 			nextCurrentX = i % 19;
 			nextCurrentY = i / 19;
-			destinationX = destination % 19;
-			destinationY = destination / 19;
 			curr_manhattan = manhattan(nextCurrentX, nextCurrentY, destinationX, destinationY);
 			f_cost =  *(g_cost + i) + curr_manhattan;
 			if (f_cost < f_cost_min){
@@ -92,10 +114,12 @@ static short next_current(short *open, short *g_cost, short destination, short s
 		}
 	}
 
+	*(open + nextCurrent) = 0;
+
 	return nextCurrent;
 }
 
-void init_astar(short *open, short* closed, short* parent, short* g_cost, short size){
+static void init_astar(short *open, short* closed, short* parent, short* g_cost, short size){
 	short i;
 
 	for (i = 0; i < size; i++){
@@ -114,21 +138,20 @@ static uint8 is_empty(short *list, short size){
 			return 0;
 		}
 	}
+
 	return 1;
 }
 
 
 static uint8 in_set(short* array, short node){
-	short i;
-
-	if (*(array + node) == 1){
-		return 1;
-	}
-
-	return 0;
+	return (*(array + node) == 1)? 1:0;
 }
 
-short manhattan(uint8 x1, uint8 y1, uint8 x2, uint8 y2){
+static void add_closed(short *closed, short location){
+	*(closed + location) = 1;
+}
+
+static short manhattan(uint8 x1, uint8 y1, uint8 x2, uint8 y2){
 	return abs(x2-x1) + abs(y2-y1);
 }
 

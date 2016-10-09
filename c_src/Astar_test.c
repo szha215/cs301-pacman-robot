@@ -19,16 +19,19 @@ int main(void){
 	int* mapp;
 	int* route;
 	uint8 steps = 0;
-	printf("start\n");
+	printf("\n================================================= start\n\n");
 
-	route = malloc(285 * sizeof(short));
+	route = malloc(MAP_WIDTH * MAP_HEIGHT * sizeof(short));
 
-	steps = astar(map, route, 146, 6);
+	steps = astar(map, MAP_WIDTH, MAP_HEIGHT, route, 146, 6);
 	//free(a);
 
-	printf("manhattan = %i\n", manhattan(6,4,4,14));
-	printf("========================end\n");
+	printf("\n======================== end\n");
 
+
+
+
+	free(route);
 	return 0;
 }
 
