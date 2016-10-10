@@ -49,14 +49,10 @@ void init_FSM();
 void FSM();
 
 //void start(struct State* state);
-void unknown(struct State* state,uint8 flag,decision_type decision_input);
-void straight(struct State* state,uint8 flag,decision_type decision_input);
-
-void turn_left(struct State* state,uint8 flag,decision_type decision_input);
-void turn_right(struct State* state,uint8 flag,decision_type decision_input);
-
-void turn_around(struct State* state,uint8 flag,decision_type decision_input);
-
+void unknown(struct State* state,motion_type current_motion,decision_type decision_input);
+void calculate(struct State* state,motion_type current_motion,decision_type decision_input);
+void execute(struct State* state,motion_type current_motion,decision_type decision_input);
+void update(struct State* state,motion_type current_motion,decision_type decision_input);
 uint8 get_pid_start();
 void set_pid_start(uint8 start);
 

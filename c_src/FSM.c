@@ -50,31 +50,29 @@ void FSM(){
 
 
 void unknown(struct State* state,motion_type current_motion,decision_type decision_input){
-    m_stop();
 
 }
 
-void straight(struct State* state,motion_type current_motion,decision_type decision_input){
-
+void calculate(struct State* state,motion_type current_motion,decision_type decision_input){
+    //calculate the pathfind
+    //maybe not needed for a star, but could still be needed in Level 1 or Level 3
 }
 
+void execute(struct State* state,motion_type current_motion,decision_type decision_input){
+    //execute current instruction, its automatic in the sub FSM
 
-
-void turn_left(struct State* state,motion_type current_motion,decision_type decision_input){
-    
+    //if the robot is turning that means the current vertex has been visited
+    //then update the next instruction
+    if(current_motion == TURNING){
+        state->next_state = update;
+    }
 }
 
-
-
-void turn_right(struct State* state,motion_type current_motion,decision_type decision_input){
-    
+void update(struct State* state,motion_type current_motion,decision_type decision_input){
+    //update next instruction
+    state->current_decision = decision_input;
+    state->next_state = execute;
 }
-
-
-void turn_around(struct State* state,motion_type current_motion,decision_type decision_input){
-
-}
-
 
 
 uint8 get_pid_start(){
