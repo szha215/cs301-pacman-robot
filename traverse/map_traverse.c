@@ -1,12 +1,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <string.h>
 #include "map.h"
 
 // other functions
 int printMap(int posX, int posY);
 void clrscr();
 void waitFor (clock_t delay);
+int rng(int max);
 
 void rule_00(); // random rule
 void rule_01(); // other predefined rules
@@ -14,13 +16,104 @@ void rule_02();
 void rule_03();
 void rule_04();
 
+
 // globals
 typedef enum {NORTH, SOUTH, EAST, WEST} dir_enum;
 dir_enum direction = NORTH;
 int* ruleUse[4] = {0,0,0,0};
 // initialize position
-int posX = 1;
-int posY = 1;
+int posX = 17;
+int posY = 13;
+
+//dfs declarations
+void recurse_dfs(int* path);
+int convDigi(int x, int y);
+void generate_path(int* path);
+void addPath();
+int food_count();
+int path_size = 300;
+int t_map[15][19];
+int path_i = 0;
+int dX, dY;
+
+void generate_path(int* path){
+	dX = posX;
+	dY = posY;
+	recurse_dfs(path);
+}
+
+void addPath(int *path){
+	printf("%d %d dxdy: %d %d food: %d\n", convDigi(dX,dY), t_map[dY][dX], dX, dY, food_count());
+	path[path_i] = convDigi(dX,dY);
+	t_map[dY][dX] = 2;
+	path_i++;
+	if (path_i >= path_size){
+		path_size += 300;
+		path = (int*)realloc(path, path_size);
+	}
+}
+
+void recurse_dfs(int* path){
+	int tX = dX;
+	int tY = dY;
+
+	addPath(path);	
+
+	
+	if (t_map[dY - 1][dX] == 0){
+		dY -= 1;
+		recurse_dfs(path);
+		dX = tX;
+		dY = tY;
+		addPath(path);	
+	}
+	if (t_map[dY + 1][dX] == 0){
+		dY += 1;
+		recurse_dfs(path);
+		dX = tX;
+		dY = tY;
+		addPath(path);	
+	}
+	if (t_map[dY][dX - 1] == 0){
+		dX -= 1;
+		recurse_dfs(path);
+		dX = tX;
+		dY = tY;
+		addPath(path);	
+	}
+	if (t_map[dY][dX + 1] == 0){
+		dX += 1;
+		recurse_dfs(path);
+		dX = tX;
+		dY = tY;
+		addPath(path);	
+	}
+	if (food_count() == 0){
+		return;
+	}
+}
+
+int food_count(){
+	int cnt = 0, i, j;
+	for (i = 0; i < 15; i++){ // y
+		for (j = 0; j < 19; j++){ // x
+			if (t_map[i][j] == 0){
+				cnt++;
+			}
+		}
+	}
+	return cnt;
+}
+
+void rule_dfs(int* path,int *i){
+	posX = path[*(i)] % 19;
+	posY = path[*(i)] / 19;
+	printf("path[]: %d posX: %d posY: %d\n", path[*(i)],posX, posY);
+}
+
+int convDigi(int x, int y){
+	return y * 19 + x;
+}
 
 int main() {
 	// y = 0 ~ 14  x = 0 ~ 18 dimensions
@@ -28,18 +121,29 @@ int main() {
 	int wait = 0;
 	// mode select
 	clrscr();
-	printf("\n Travel rule (0 ~ 4): ");
+	printf("\n Travel rule (0 ~ 5): ");
 	scanf("%d", &rule);
 	clrscr();
 	printf("\n Wait mode? (1 = Yes): ");
 	scanf("%d", &wait);
 
-	// initial print
-	printMap(posX, posY);
-
 	int i = 0;
 	int timeLimit = 10 * 60;
-	int food = 1;
+	int food;
+
+	int *path;
+
+	// initial print
+	food = printMap(posX, posY);
+
+	if (rule == 5){
+		path = (int*)calloc(path_size,sizeof(int));
+		memcpy(t_map,map,sizeof(int)*15*19);
+		generate_path(path);
+		memset(t_map,0,sizeof(int)*15*19);
+	}
+	waitFor(3);
+
 	// process rule
 	while (i < timeLimit){
 		food = printMap(posX, posY);
@@ -58,6 +162,12 @@ int main() {
 			rule_03();
 		}else if (rule == 4){
 			rule_04();
+		}else if (rule == 5){
+			rule_dfs(path, &i);
+			if (i >= path_i){
+				break;
+			}
+			printf("i: %d path_i: %d food: %d\n", i, path_i, food);
 		}else {
 			break;
 		}
@@ -116,7 +226,6 @@ void clrscr(){
     system("@cls||clear");
 }
 
-
 // delay function
 void waitFor (clock_t delay) {
 	clock_t t = clock() + (delay * CLOCKS_PER_SEC);
@@ -124,15 +233,16 @@ void waitFor (clock_t delay) {
 }
 
 // RNG between 1 and max
-int random(int max) {
+int rng(int max) {
     srand((unsigned)time(NULL));
     return (rand() % max) + 1;
 }
 
+
 // random between the rules
 void rule_00 (){
 	int r;
-	r = random(4);
+	r = rng(4);
 	if (r == 1){
 		rule_01();
 	}else if (r == 2){
@@ -144,7 +254,6 @@ void rule_00 (){
 	}
 	ruleUse[r - 1] += 1;
 }
-
 
 // T intersection turn clockwise
 // X intersection go straight
