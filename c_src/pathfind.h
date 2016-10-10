@@ -15,18 +15,18 @@
 #define PATHFIND_H
 
 #include <math.h>
-#include "project.h"
+#include <stdint.h>
+//#include "project.h"
 #include "Astar.h"
 
-#include "map.h"
+
 
 #define MAP_WIDTH 19
 #define MAP_HEIGHT 15
 
+int16_t find_path(uint8_t level, int *map, uint16_t *route, uint16_t start, uint16_t destination);
 
-
-
-
+uint8_t next_turn(int16_t *route, uint16_t x, uint16_t y, uint16_t angle);
 
 
 

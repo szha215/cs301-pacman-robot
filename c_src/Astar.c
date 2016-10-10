@@ -149,7 +149,7 @@ static int16_t next_current(int16_t *open, int16_t *g_cost, int16_t destination,
 			if (f_cost < f_cost_min){
 				f_cost_min = f_cost;
 				bestCurrent = i;
-			}else if(f_cost == f_cost_min){
+			} else if (f_cost == f_cost_min){
 				best_manhattan = manhattan(bestCurrentX, bestCurrentY, destinationX, destinationY);
 				if (next_manhattan <= best_manhattan){
 					f_cost_min = f_cost;

@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "Astar.h"
+#include "pathfind.h"
 #include "map.h"
 
 int in_sett(int16_t *route, int steps, int node){
@@ -36,10 +37,13 @@ int main(void){
 
 	route = malloc(MAP_WIDTH * MAP_HEIGHT * sizeof(short));
 
-	steps = astar(map, MAP_WIDTH, MAP_HEIGHT, route, 1*MAP_WIDTH+1, 13*MAP_WIDTH+17);
+	//steps = astar(map, MAP_WIDTH, MAP_HEIGHT, route, 1*MAP_WIDTH+1, 13*MAP_WIDTH+17);
+	steps = find_path(2, map, route, 13*MAP_WIDTH+17, 1*MAP_WIDTH+1);
 	//free(a);
 
 	printf("\n======================== ASTAR end\n");
+
+	printf("TOTAL STEPS = %i\n", steps);
 
 	for (i = 0; i < 15; i++){
 		for (j = 0; j < 19; j++){
