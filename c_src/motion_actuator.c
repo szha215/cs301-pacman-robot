@@ -68,7 +68,18 @@ void motion_straight(struct motion_state* m_state,decision_type decision){
 	m_straight();
 
     if(decision == STRAIGHT){
-        m_state->next_state = motion_straight;
+        //straight
+        if (s_fl == IN_LINE && s_fr == IN_LINE){
+            m_state->next_state = motion_straight;
+            
+        // adjust right
+        } else if (s_fl == OUT_LINE && s_fr == IN_LINE) {
+            m_state->next_state = motion_adjust_right;
+            
+        // adjust left
+        } else if (s_fr == OUT_LINE && s_fl == IN_LINE) {
+            m_state->next_state = motion_adjust_left;
+        } 
     }
     else if(decision == TURN_LEFT){
         if(s_l == IN_LINE){
@@ -111,18 +122,7 @@ void motion_straight(struct motion_state* m_state,decision_type decision){
     }    
 
 
-    //straight
-    if (s_fl == IN_LINE && s_fr == IN_LINE){
-        m_state->next_state = motion_straight;
-        
-    // adjust right
-    } else if (s_fl == OUT_LINE && s_fr == IN_LINE) {
-        m_state->next_state = motion_adjust_right;
-        
-    // adjust left
-    } else if (s_fr == OUT_LINE && s_fl == IN_LINE) {
-        m_state->next_state = motion_adjust_left;
-    } 
+    
 
 }
 
