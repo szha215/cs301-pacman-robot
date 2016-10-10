@@ -77,7 +77,7 @@ int16_t astar(int *map, int16_t width, int16_t height, int16_t *route, int16_t s
 		current = next_current(open, g_cost, destination, 285);
 		printf("current = %i, %i\n", current%19, current/19);
 		add_closed(closed, current);
-		printf("%i\n", add_open(map, open, closed, parent, current));
+		printf("%i\n", add_open(map, open, closed, g_cost, parent, current));
 
 		j++;
 
@@ -114,6 +114,8 @@ int16_t astar(int *map, int16_t width, int16_t height, int16_t *route, int16_t s
 	free(g_cost);
 	free(traced_route);
 
+	//memcpy(route, closed, (MAP_WIDTH*MAP_HEIGHT-1) * sizeof(int16_t));
+
 	return steps;
 }
 
@@ -121,16 +123,17 @@ static int16_t next_current(int16_t *open, int16_t *g_cost, int16_t destination,
 	int16_t f_cost_min = SHRT_MAX;	// 32767
 	int16_t f_cost = 0;
 	int16_t nextCurrent = 0;
+	int16_t bestCurrent = 0;
 
 	int16_t nextCurrentX = 0;
 	int16_t nextCurrentY = 0;
-	int16_t prevCurrentX = 0;
-	int16_t prevCurrentY = 0;
+	int16_t bestCurrentX = 0;
+	int16_t bestCurrentY = 0;
 	int16_t destinationX = destination % 19;
 	int16_t destinationY = destination / 19;
 
-	int16_t prev_manhattan = 0;
-	int16_t curr_manhattan = 0;
+	int16_t best_manhattan = 0;
+	int16_t next_manhattan = 0;
 	int16_t i;
 
 	//printf("int16_t MAX = %i\n", f_cost_min);
@@ -139,26 +142,26 @@ static int16_t next_current(int16_t *open, int16_t *g_cost, int16_t destination,
 		if (*(open + i) == 1){
 			nextCurrentX = i % 19;
 			nextCurrentY = i / 19;
-			curr_manhattan = manhattan(nextCurrentX, nextCurrentY, destinationX, destinationY);
-			f_cost =  *(g_cost + i) + curr_manhattan;
+			bestCurrentX = bestCurrent % 19;
+			bestCurrentY = bestCurrent / 19;
+			next_manhattan = manhattan(nextCurrentX, nextCurrentY, destinationX, destinationY);
+			f_cost =  *(g_cost + i) + next_manhattan;
 			if (f_cost < f_cost_min){
 				f_cost_min = f_cost;
-				nextCurrent = i;
+				bestCurrent = i;
 			}else if(f_cost == f_cost_min){
-				prevCurrentX = i % 19;
-				prevCurrentY = i / 19;
-				prev_manhattan = manhattan(prevCurrentX, prevCurrentY, destinationX, destinationY);
-				if(curr_manhattan <= prev_manhattan){
+				best_manhattan = manhattan(bestCurrentX, bestCurrentY, destinationX, destinationY);
+				if (next_manhattan <= best_manhattan){
 					f_cost_min = f_cost;
-					nextCurrent = i;
+					bestCurrent = i;
 				}
 			}
 		}
 	}
 
-	*(open + nextCurrent) = 0;
+	*(open + bestCurrent) = 0;
 
-	return nextCurrent;
+	return bestCurrent;
 }
 
 static void init_astar(int16_t *open, int16_t* closed, int16_t* parent, int16_t* g_cost, int16_t size){
@@ -193,9 +196,10 @@ static void add_closed(int16_t *closed, int16_t location){
 	*(closed + location) = 1;
 }
 
-static uint8_t add_open(int *map, int16_t *open, int16_t *closed, int16_t *parent, int16_t current){
+static uint8_t add_open(int *map, int16_t *open, int16_t *closed, int16_t *g_cost, int16_t *parent, int16_t current){
 	int16_t i;
 	int16_t o_count = 0, temp = 0;
+	int16_t g;
 
 	// North
 	temp = current - MAP_WIDTH;
@@ -203,6 +207,7 @@ static uint8_t add_open(int *map, int16_t *open, int16_t *closed, int16_t *paren
 	if (temp >= 0 &&  *(map + temp) == 0 && *(closed + temp) == -1){
 		*(open + temp) = 1;
 		*(parent + temp) = current;
+		*(g_cost + temp) = *(g_cost + current) + 1;
 		o_count++;
 
 		printf("open North added at %i, %i\n", temp%19, temp/19);
@@ -214,6 +219,7 @@ static uint8_t add_open(int *map, int16_t *open, int16_t *closed, int16_t *paren
 	if (temp < MAP_WIDTH * MAP_HEIGHT &&  *(map + temp) == 0 && *(closed + temp) == -1){
 		*(open + temp) = 1;
 		*(parent + temp) = current;
+		*(g_cost + temp) = *(g_cost + current) + 1;
 		o_count++;
 
 		printf("open South added at %i, %i\n", temp%19, temp/19);
@@ -225,6 +231,7 @@ static uint8_t add_open(int *map, int16_t *open, int16_t *closed, int16_t *paren
 	if (temp >= 0 &&  *(map + temp) == 0 && *(closed + temp) == -1){
 		*(open + temp) = 1;
 		*(parent + temp) = current;
+		*(g_cost + temp) = *(g_cost + current) + 1;
 		o_count++;
 
 		printf("open West added at %i, %i\n", temp%19, temp/19);
@@ -236,6 +243,7 @@ static uint8_t add_open(int *map, int16_t *open, int16_t *closed, int16_t *paren
 	if (temp < MAP_WIDTH * MAP_HEIGHT &&  *(map + temp) == 0 && *(closed + temp) == -1){
 		*(open + temp) = 1;
 		*(parent + temp) = current;
+		*(g_cost + temp) = *(g_cost + current) + 1;
 		o_count++;
 
 		printf("open East added at %i, %i\n", temp%19, temp/19);

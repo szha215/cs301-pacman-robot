@@ -38,7 +38,7 @@ static int16_t next_current(int16_t *open, int16_t *g_cost, int16_t destination,
 
 static void add_closed(int16_t *closed, int16_t location);
 
-static uint8_t add_open(int *map, int16_t *open, int16_t *closed, int16_t *parent, int16_t current);
+static uint8_t add_open(int *map, int16_t *open, int16_t *closed, int16_t *g_cost, int16_t *parent, int16_t current);
 
 static uint8_t traceback(int16_t *parent, int16_t *traceback, int16_t destination, int16_t start);
 
