@@ -59,10 +59,11 @@ void calculate(struct State* state,motion_type current_motion,decision_type deci
 }
 
 void execute(struct State* state,motion_type current_motion,decision_type decision_input){
-    //execute current instruction, its automatic in the sub FSM
+    //execute current instruction, which is automatic in the sub FSM
 
     //if the robot is turning that means the current vertex has been visited
-    //then update the next instruction
+    //then update to the next instruction
+    //should give some feedback to the outer path-find module which contains all the instruction
     if(current_motion == TURNING){
         state->next_state = update;
     }
