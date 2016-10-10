@@ -12,18 +12,34 @@
 
 #include "Astar.h"
 
-short astar(int *map, short width, short height, short *route, short start, short destination){
-	short *open, *closed, *parent, *g_cost;
-	short o_count, c_count, p_count;
-	short current;
-	int i, j;
+int16_t astar(int *map, int16_t width, int16_t height, int16_t *route, int16_t start, int16_t destination){
+	int16_t *open, *closed, *parent, *g_cost, *traced_route;
+	int16_t o_count, c_count, p_count;
+	int16_t current;
+	uint16_t i, j, steps;
 
-	printf("size of map = %i\n\n", sizeof(short));
+	printf("size of map = %i\n\n", sizeof(int16_t));
 
-	open = (short*)malloc(285 * sizeof(short));
-	closed = (short*)malloc(285 * sizeof(short));
-	parent = (short*)malloc(285 * sizeof(short));
-	g_cost = (short*)malloc(285 * sizeof(short));
+	if (destination > MAP_WIDTH*MAP_HEIGHT || destination < 0){
+		printf("INVALID DESTINATION\n");
+		return 0;
+	} else if (start > MAP_WIDTH*MAP_HEIGHT || start < 0){
+		printf("INVALID START\n");
+		return 0;
+	} else if (*(map + destination) == 1){
+		printf("INVALID DESTINATION\n");
+		return 0;
+	} else if (*(map + start) == 1){
+		printf("INVALID START\n");
+		return 0;
+	}
+
+
+	open = (int16_t*)malloc(285 * sizeof(int16_t));
+	closed = (int16_t*)malloc(285 * sizeof(int16_t));
+	parent = (int16_t*)malloc(285 * sizeof(int16_t));
+	g_cost = (int16_t*)malloc(285 * sizeof(int16_t));
+	traced_route = (int16_t*)malloc(200 * sizeof(int16_t));
 
 	init_astar(open, closed, parent, g_cost, 285);
 
@@ -55,43 +71,69 @@ short astar(int *map, short width, short height, short *route, short start, shor
 	o_count++;
 	*(g_cost + start) = 0;
 
+	j = 0;
+
 	while (!is_empty(open, 285)){
+		current = next_current(open, g_cost, destination, 285);
+		printf("current = %i, %i\n", current%19, current/19);
+		add_closed(closed, current);
+		printf("%i\n", add_open(map, open, closed, parent, current));
 
+		j++;
 
-
-		break;
+		if (current == destination){
+			printf("DESTINATION REACHED\n");
+			break;
+		}
+		
 	}
 
-	current = next_current(open, g_cost, destination, 285);
-	printf("initial current = %i\n", current);
-	add_closed(closed, current);
-	printf("closed [start] = %i\n", *(closed+start));
+	steps = traceback(parent, traced_route, destination, start);
+	
 
+	printf("STEPS = %i\n", steps);
+	
+	for (i = 0; i < steps; i++){
+		printf("traced_route[%i] = %i, %i\n", i, *(traced_route+i)%MAP_WIDTH, *(traced_route+i)/MAP_WIDTH);
+	}
+	
+	flip_array(traced_route, route, steps);
+
+	for (i = 0; i < steps; i++){
+		printf("route[%i] = %i, %i\n", i, *(route+i)%MAP_WIDTH, *(route+i)/MAP_WIDTH);
+	}
+
+	//printf("closed [start] = %i\n", *(closed+start));
+
+	//printf("%i\n", add_open(map, open, closed, parent, current));
 
 
 	free(parent);
 	free(open);
 	free(closed);
 	free(g_cost);
+	free(traced_route);
+
+	return steps;
 }
 
-static short next_current(short *open, short *g_cost, short destination, short size){
-	short f_cost_min = SHRT_MAX;	// 32767
-	short f_cost = 0;
-	short nextCurrent = 0;
+static int16_t next_current(int16_t *open, int16_t *g_cost, int16_t destination, int16_t size){
+	int16_t f_cost_min = SHRT_MAX;	// 32767
+	int16_t f_cost = 0;
+	int16_t nextCurrent = 0;
 
-	short nextCurrentX = 0;
-	short nextCurrentY = 0;
-	short prevCurrentX = 0;
-	short prevCurrentY = 0;
-	short destinationX = destination % 19;
-	short destinationY = destination / 19;
+	int16_t nextCurrentX = 0;
+	int16_t nextCurrentY = 0;
+	int16_t prevCurrentX = 0;
+	int16_t prevCurrentY = 0;
+	int16_t destinationX = destination % 19;
+	int16_t destinationY = destination / 19;
 
-	short prev_manhattan = 0;
-	short curr_manhattan = 0;
-	short i;
+	int16_t prev_manhattan = 0;
+	int16_t curr_manhattan = 0;
+	int16_t i;
 
-	printf("short MAX = %i\n", f_cost_min);
+	//printf("int16_t MAX = %i\n", f_cost_min);
 
 	for (i = 0; i < size; i++){
 		if (*(open + i) == 1){
@@ -119,8 +161,8 @@ static short next_current(short *open, short *g_cost, short destination, short s
 	return nextCurrent;
 }
 
-static void init_astar(short *open, short* closed, short* parent, short* g_cost, short size){
-	short i;
+static void init_astar(int16_t *open, int16_t* closed, int16_t* parent, int16_t* g_cost, int16_t size){
+	int16_t i;
 
 	for (i = 0; i < size; i++){
 		*(open + i) = -1;
@@ -130,8 +172,8 @@ static void init_astar(short *open, short* closed, short* parent, short* g_cost,
 	}
 }
 
-static uint8 is_empty(short *list, short size){
-	short i;
+static uint8_t is_empty(int16_t *list, int16_t size){
+	int16_t i;
 
 	for (i = 0; i < size; i++){
 		if (*(list + i) == 1){
@@ -143,15 +185,90 @@ static uint8 is_empty(short *list, short size){
 }
 
 
-static uint8 in_set(short* array, short node){
+static uint8_t in_set(int16_t* array, int16_t node){
 	return (*(array + node) == 1)? 1:0;
 }
 
-static void add_closed(short *closed, short location){
+static void add_closed(int16_t *closed, int16_t location){
 	*(closed + location) = 1;
 }
 
-static short manhattan(uint8 x1, uint8 y1, uint8 x2, uint8 y2){
+static uint8_t add_open(int *map, int16_t *open, int16_t *closed, int16_t *parent, int16_t current){
+	int16_t i;
+	int16_t o_count = 0, temp = 0;
+
+	// North
+	temp = current - MAP_WIDTH;
+
+	if (temp >= 0 &&  *(map + temp) == 0 && *(closed + temp) == -1){
+		*(open + temp) = 1;
+		*(parent + temp) = current;
+		o_count++;
+
+		printf("open North added at %i, %i\n", temp%19, temp/19);
+	}
+
+	// South
+	temp = current + MAP_WIDTH;
+
+	if (temp < MAP_WIDTH * MAP_HEIGHT &&  *(map + temp) == 0 && *(closed + temp) == -1){
+		*(open + temp) = 1;
+		*(parent + temp) = current;
+		o_count++;
+
+		printf("open South added at %i, %i\n", temp%19, temp/19);
+	}
+
+	// West
+	temp = current - 1;
+
+	if (temp >= 0 &&  *(map + temp) == 0 && *(closed + temp) == -1){
+		*(open + temp) = 1;
+		*(parent + temp) = current;
+		o_count++;
+
+		printf("open West added at %i, %i\n", temp%19, temp/19);
+	}
+
+	// East
+	temp = current + 1;
+
+	if (temp < MAP_WIDTH * MAP_HEIGHT &&  *(map + temp) == 0 && *(closed + temp) == -1){
+		*(open + temp) = 1;
+		*(parent + temp) = current;
+		o_count++;
+
+		printf("open East added at %i, %i\n", temp%19, temp/19);
+	}
+
+	return o_count;
+}
+
+static uint8_t traceback(int16_t *parent, int16_t *traceback, int16_t destination, int16_t start){
+	uint8_t steps = 0;
+	int16_t current = destination;
+
+	*(traceback + steps) = current;
+	steps++;
+
+	while (current != start){
+		*(traceback + steps) = *(parent + current);
+		current = *(parent + current);
+		steps++;
+	}
+
+	return steps;
+}
+
+static void flip_array(int16_t *source, int16_t *target, uint16_t size){
+	uint16_t i;
+
+	for (i = 0; i < size; i++){
+		*(target + i) = *(source + size - i - 1);
+	}
+}
+
+static int16_t manhattan(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2){
 	return abs(x2-x1) + abs(y2-y1);
 }
 

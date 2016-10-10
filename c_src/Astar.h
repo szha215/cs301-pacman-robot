@@ -15,6 +15,7 @@
 #define ASTAR_H
 
 #include <math.h>
+#include <stdint.h>
 #include <limits.h>
 
 #define MAP_WIDTH 19
@@ -23,25 +24,27 @@
 #define TRACK 0
 #define WALL 1
 
-#define uint8 short
-
 typedef enum {UNKNOWN, VISITED, EXPLORED} status;
 
-short astar(int *map, short width, short height, short *route, short start, short destination);
+int16_t astar(int *map, int16_t width, int16_t height, int16_t *route, int16_t start, int16_t destination);
 
-static void init_astar(short *open, short *closed, short *parent, short *g_cost, short size);
+static void init_astar(int16_t *open, int16_t *closed, int16_t *parent, int16_t *g_cost, int16_t size);
 
-static uint8 is_empty(short *list, short size);
+static uint8_t is_empty(int16_t *list, int16_t size);
 
-static uint8 in_set(short* array, short data);
+static uint8_t in_set(int16_t* array, int16_t data);
 
-static short next_current(short *open, short *g_cost, short destination, short size);
+static int16_t next_current(int16_t *open, int16_t *g_cost, int16_t destination, int16_t size);
 
-static void add_closed(short *closed, short location);
+static void add_closed(int16_t *closed, int16_t location);
 
+static uint8_t add_open(int *map, int16_t *open, int16_t *closed, int16_t *parent, int16_t current);
 
+static uint8_t traceback(int16_t *parent, int16_t *traceback, int16_t destination, int16_t start);
 
-static short manhattan(uint8 x1, uint8 y1, uint8 x2, uint8 y2);
+static void flip_array(int16_t *source, int16_t *target, uint16_t size);
+
+static int16_t manhattan(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
 
 #endif
 
