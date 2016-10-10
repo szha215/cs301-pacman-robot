@@ -26,7 +26,7 @@ void FSM(){
     struct State CS;
     struct motion_state motion_CS;
     motion_CS.next_state = motion_straight;
-    CS.next_state = straight;
+    CS.next_state = execute;
     init_FSM();
 
     

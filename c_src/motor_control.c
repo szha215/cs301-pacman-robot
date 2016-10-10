@@ -106,8 +106,8 @@ uint16 conv_pix_distance(uint16 distance){
 
 
 void m_stop(){
-    PWM_M1_WriteCompare(STOP);
-    PWM_M2_WriteCompare(STOP);
+    PWM_M1_WriteCompare(STOP_MOTOR);
+    PWM_M2_WriteCompare(STOP_MOTOR);
 }
 
 void m_straight(){

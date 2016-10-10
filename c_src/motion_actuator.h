@@ -51,6 +51,7 @@ uint8 get_state_complete();
 void motion_straight(struct motion_state* m_state,decision_type decision);
 void motion_adjust_left(struct motion_state* m_state,decision_type decision);
 void motion_adjust_right(struct motion_state* m_state,decision_type decision);
+void motion_stop(struct motion_state* m_state,decision_type decision);
 void motion_turn_left(struct motion_state* m_state,decision_type decision);
 void motion_turn_right(struct motion_state* m_state,decision_type decision);
 void motion_turn_around(struct motion_state* m_state,decision_type decision);

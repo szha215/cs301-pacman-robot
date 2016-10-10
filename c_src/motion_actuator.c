@@ -64,7 +64,7 @@ void start_sensor_isr(){
 
 
 void motion_straight(struct motion_state* m_state,decision_type decision){
-    m_state->current_motion = STRAIGHT;
+    m_state->current_motion = GOING_STRAIGHT;
 	m_straight();
 
     if(decision == STRAIGHT){

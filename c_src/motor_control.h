@@ -38,7 +38,7 @@
 #define M_TO_PX_RATIO 415
 
 
-#define STOP 128
+#define STOP_MOTOR 128
 #define M_FORWARD_MAX 255
 #define M_BACKWARD_MAX 0
 
