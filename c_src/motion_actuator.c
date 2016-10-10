@@ -63,8 +63,26 @@ void start_sensor_isr(){
 }
 
 
-void motion_straight(struct motion_state* m_state,uint8 flag){
+void motion_straight(struct motion_state* m_state,decision_type decision){
 	m_straight();
+
+    if(decision == STRAIGHT){
+        m_state->next_state = motion_straight;
+    }
+    else if(decision == TURN_LEFT){
+
+    }
+    else if(decision == TURN_RIGHT){
+
+    }
+    else if(decision == TURN_AROUND){
+
+    }
+    else if(decision == STOP){
+
+    }    
+
+
     //straight
     if (s_fl == IN_LINE && s_fr == IN_LINE){
         m_state->next_state = motion_straight;
@@ -80,7 +98,7 @@ void motion_straight(struct motion_state* m_state,uint8 flag){
 
 }
 
-void motion_adjust_left(struct motion_state* m_state,uint8 flag){
+void motion_adjust_left(struct motion_state* m_state,decision_type decision){
 	m_adjust_left();
 
     if (s_fl == IN_LINE && s_fr == IN_LINE){
@@ -94,7 +112,7 @@ void motion_adjust_left(struct motion_state* m_state,uint8 flag){
     }
 }
 
-void motion_adjust_right(struct motion_state* m_state,uint8 flag){
+void motion_adjust_right(struct motion_state* m_state,decision_type decision){
 	m_adjust_right();
 
     if (s_fl == IN_LINE && s_fr == IN_LINE){
@@ -108,11 +126,11 @@ void motion_adjust_right(struct motion_state* m_state,uint8 flag){
     }
 }
 
-void motion_stop(struct motion_state* m_state,uint8 flag){
+void motion_stop(struct motion_state* m_state,decision_type decision){
 	m_stop();
 }
 
-uint8 receive_next_state(uint8 flag){
+uint8 receive_next_state(decision_type decision){
 	return 0;
 }
 

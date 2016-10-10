@@ -29,13 +29,18 @@ void FSM(){
     CS.next_state = straight;
     init_FSM();
 
-    //decision flag of pathfinding results
-    uint8 decision = 0;
     
+    //TODO:
+    //Initialize all the motion and decision states 
+    CS.current_decision = STOP;
+    motion_CS.current_motion = STOPPED;
+    //decision flag of pathfinding results
+    decision_type decision = STOP; //pathfind variable
+
     // CS <= NS; state updater
     for(;;){
-        motion_CS.next_state(&motion_CS,CS.current_flag);
-        CS.next_state(&CS,motion_CS.current_flag,decision);
+        motion_CS.next_state(&motion_CS,CS.current_decision);
+        CS.next_state(&CS,motion_CS.current_motion,decision);
        
     }
 }
@@ -44,30 +49,30 @@ void FSM(){
 
 
 
-void unknown(struct State* state,uint8 flag,uint8 decision_input){
+void unknown(struct State* state,motion_type current_motion,decision_type decision_input){
     m_stop();
 
 }
 
-void straight(struct State* state,uint8 flag,uint8 decision_input){
+void straight(struct State* state,motion_type current_motion,decision_type decision_input){
 
 }
 
 
 
-void turn_left(struct State* state,uint8 flag,uint8 decision_input){
+void turn_left(struct State* state,motion_type current_motion,decision_type decision_input){
     
 }
 
 
 
-void turn_right(struct State* state,uint8 flag,uint8 decision_input){
+void turn_right(struct State* state,motion_type current_motion,decision_type decision_input){
     
 }
 
 
-void turn_around(struct State* state,uint8 flag,uint8 decision_input){
-    
+void turn_around(struct State* state,motion_type current_motion,decision_type decision_input){
+
 }
 
 
