@@ -25,9 +25,7 @@ int16_t find_path(uint8_t level, int *map, uint16_t *route, uint16_t start, uint
 }
 
 decision_type next_turn(int16_t *route, uint16_t steps, uint16_t x, uint16_t y, uint16_t angle){
-	float x_f = x/MAP_HEIGHT_PIXEL * MAP_WIDTH;
-	float y_f = y/MAP_HEIGHT_PIXEL * MAP_HEIGHT;
-	int16_t current = ((int16_t)y_f) * MAP_WIDTH + ((int16_t)x_f/MAP_WIDTH_PIXEL);
+	int16_t current = conv_location(x, y);
 	int16_t i, rel_direction, current_direction;	//next direction => 0=north, 1=south, 2=east, 3=west
 	int16_t current_step = -1;
 	decision_type decision = UNKNOWN;
@@ -65,6 +63,13 @@ decision_type next_turn(int16_t *route, uint16_t steps, uint16_t x, uint16_t y, 
 		return TURN_AROUND;
 	}
 
+}
+
+int16_t conv_location(uint16_t x, uint16_t y){
+	float x_f = x/MAP_HEIGHT_PIXEL * MAP_WIDTH;
+	float y_f = y/MAP_HEIGHT_PIXEL * MAP_HEIGHT;
+
+	return ((int16_t)y_f) * MAP_WIDTH + ((int16_t)x_f/MAP_WIDTH_PIXEL);
 }
 
 static int16_t round_angle(int16_t angle){
