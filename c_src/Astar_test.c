@@ -15,6 +15,7 @@
 #include "Astar.h"
 #include "pathfind.h"
 #include "map.h"
+#include "defines.h" 
 
 int in_sett(int16_t *route, int steps, int node){
 	int i;
@@ -30,12 +31,12 @@ int in_sett(int16_t *route, int steps, int node){
 
 int main(void){
 	int* mapp;
-	int* route;
+	int16_t* route;
 	int i,j;
 	uint8_t steps = 0;
 	printf("\n================================================= start\n\n");
 
-	route = malloc(MAP_WIDTH * MAP_HEIGHT * sizeof(short));
+	route = (int16_t*)malloc(MAP_WIDTH * MAP_HEIGHT * sizeof(short));
 
 	//steps = astar(map, MAP_WIDTH, MAP_HEIGHT, route, 1*MAP_WIDTH+1, 13*MAP_WIDTH+17);
 	steps = find_path(2, map, route, 13*MAP_WIDTH+17, 1*MAP_WIDTH+1);

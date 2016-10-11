@@ -188,10 +188,6 @@ static uint8_t is_empty(int16_t *list, int16_t size){
 }
 
 
-static uint8_t in_set(int16_t* array, int16_t node){
-	return (*(array + node) == 1)? 1:0;
-}
-
 static void add_closed(int16_t *closed, int16_t location){
 	*(closed + location) = 1;
 }

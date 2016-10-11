@@ -14,6 +14,8 @@
 #ifndef ASTAR_H
 #define ASTAR_H
 
+#include <stdlib.h>
+#include <stdio.h>
 #include <math.h>
 #include <stdint.h>
 #include <limits.h>
@@ -31,8 +33,6 @@ int16_t astar(int *map, int16_t width, int16_t height, int16_t *route, int16_t s
 static void init_astar(int16_t *open, int16_t *closed, int16_t *parent, int16_t *g_cost, int16_t size);
 
 static uint8_t is_empty(int16_t *list, int16_t size);
-
-static uint8_t in_set(int16_t* array, int16_t data);
 
 static int16_t next_current(int16_t *open, int16_t *g_cost, int16_t destination, int16_t size);
 
