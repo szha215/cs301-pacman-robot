@@ -27,8 +27,8 @@
 #define MAP_WIDTH 19
 #define MAP_HEIGHT 15
 
-#define MAP_WIDTH_PIXEL 1024
-#define MAP_HEIGHT_PIXEL 768
+#define MAP_WIDTH_PIXEL 1024.0
+#define MAP_HEIGHT_PIXEL 768.0
 
 int16_t find_path(uint8_t level, int *map, uint16_t *route, uint16_t start, uint16_t destination);
 
