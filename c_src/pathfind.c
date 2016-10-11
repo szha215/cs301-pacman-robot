@@ -24,10 +24,11 @@ int16_t find_path(uint8_t level, int *map, uint16_t *route, uint16_t start, uint
 	return -1;
 }
 
-uint8_t next_turn(int16_t *route, int16_t steps, uint16_t x, uint16_t y, uint16_t angle){
-	int16_t current = y * MAP_WIDTH + x;
-	int16_t i, rel_direction;	//next direction => 0=north, 1=south, 2=east, 3=west
+decision_type next_turn(int16_t *route, uint16_t steps, uint16_t x, uint16_t y, uint16_t angle){
+	int16_t current = (y/MAP_HEIGHT_PIXEL) * MAP_WIDTH + (x/MAP_WIDTH_PIXEL);
+	int16_t i, rel_direction, current_direction;	//next direction => 0=north, 1=south, 2=east, 3=west
 	int16_t current_step = -1;
+	decision_type decision = UNKNOWN;
 
 	for (i = 0; i < steps; i++){
 		if (*(route + i) == current){
@@ -37,22 +38,44 @@ uint8_t next_turn(int16_t *route, int16_t steps, uint16_t x, uint16_t y, uint16_
 	}
 
 	if (current_step == -1){
-		return current_step;
+		return STOP;
 	}
 
 	if (*(route + current_step + 1)/MAP_WIDTH < *(route + current_step)/MAP_WIDTH){	//North
-		rel_direction = 0;
+		rel_direction = 90;
 	}else if (*(route + current_step + 1)/MAP_WIDTH > *(route + current_step)/MAP_WIDTH){	//South
-		rel_direction = 1;
+		rel_direction = 270;
 	}else if (*(route + current_step + 1)%MAP_WIDTH > *(route + current_step)%MAP_WIDTH){	//East
-		rel_direction = 2;
+		rel_direction = 0;
 	}else if (*(route + current_step + 1)%MAP_WIDTH < *(route + current_step)%MAP_WIDTH){	//West
-		rel_direction = 3;
+		rel_direction = 180;
+	}
+
+	current_direction = round_angle(angle/10);
+
+	if (current_direction == rel_direction){
+		return STRAIGHT;
+	} else if (current_direction > rel_direction){
+		return TURN_RIGHT;
+	} else if (current_direction < rel_direction){
+		return TURN_LEFT;
+	} else {
+		return TURN_AROUND;
 	}
 
 }
 
-
+static int16_t round_angle(int16_t angle){
+	if (angle < 10 && angle > 350){
+		return 0;
+	} else if (angle < 100 && angle > 80){
+		return 90;
+	} else if (angle < 190 && angle > 170){
+		return 180;
+	} else {
+		return 270;
+	}
+}
 
 
 
