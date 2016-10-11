@@ -28,7 +28,7 @@ decision_type next_turn(int16_t *route, uint16_t steps, uint16_t x, uint16_t y, 
 	int16_t current = conv_location(x, y);
 	int16_t i, rel_direction, current_direction;	//next direction => 0=north, 1=south, 2=east, 3=west
 	int16_t current_step = -1;
-	decision_type decision = UNKNOWN;
+	
 
 	for (i = 0; i < steps; i++){
 		if (*(route + i) == current){

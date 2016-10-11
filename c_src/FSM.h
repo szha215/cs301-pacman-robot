@@ -21,7 +21,8 @@
 #include "motor_control.h"
 #include "RF_handler.h"
 #include "defines.h"
-
+#include "pathfind.h"
+#include "map.h"
 
 
 //#define ANGLE_THRESHOLD 20
@@ -40,6 +41,10 @@ typedef void state_logic(struct State*,motion_type current_motion,decision_type 
 struct State{
     state_logic* next_state;
    	decision_type current_decision;
+   	update_states fsm_state;
+   	int16_t *route;
+   	int16_t steps;
+   	data_main *rf_data;
 };
 
 //state_logic unknown, straight, front_out, turn_left, turn_right;

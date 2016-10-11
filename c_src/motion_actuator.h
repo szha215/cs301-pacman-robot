@@ -33,7 +33,7 @@ uint8 s_m;
 uint8 s_b;
 
 struct motion_state;
-typedef void motion_state_logic(struct motion_state*,decision_type decision);
+typedef void motion_state_logic(struct motion_state*,decision_type decision, update_states fsm_state);
 struct motion_state{
 	motion_state_logic* next_state;
 	motion_type current_motion;
@@ -48,12 +48,13 @@ uint8 get_state_complete();
 
 
 //states 
-void motion_straight(struct motion_state* m_state,decision_type decision);
-void motion_adjust_left(struct motion_state* m_state,decision_type decision);
-void motion_adjust_right(struct motion_state* m_state,decision_type decision);
-void motion_stop(struct motion_state* m_state,decision_type decision);
-void motion_turn_left(struct motion_state* m_state,decision_type decision);
-void motion_turn_right(struct motion_state* m_state,decision_type decision);
-void motion_turn_around(struct motion_state* m_state,decision_type decision);
-void motion_turning_buffer(struct motion_state* m_state,decision_type decision);
+void motion_straight(struct motion_state* m_state,decision_type decision, update_states fsm_state);
+void motion_adjust_left(struct motion_state* m_state,decision_type decision, update_states fsm_state);
+void motion_adjust_right(struct motion_state* m_state,decision_type decision, update_states fsm_state);
+void motion_stop(struct motion_state* m_state,decision_type decision, update_states fsm_state);
+void motion_turn_left(struct motion_state* m_state,decision_type decision, update_states fsm_state);
+void motion_turn_right(struct motion_state* m_state,decision_type decision, update_states fsm_state);
+void motion_turn_around(struct motion_state* m_state,decision_type decision, update_states fsm_state);
+void motion_turning_buffer(struct motion_state* m_state,decision_type decision, update_states fsm_state);
+void motion_stop_buffer(struct motion_state* m_state,decision_type decision, update_states fsm_state);
 #endif
