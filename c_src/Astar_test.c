@@ -79,6 +79,9 @@ int main(void){
 	if (decision == TURN_AROUND){
 		printf("decision = TURN_AROUND\n");
 	}
+
+	printf("ENUM SIZE = %i\n", sizeof(astar_status));
+
 	free(route);
 	return 0;
 }

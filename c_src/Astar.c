@@ -264,7 +264,7 @@ static uint8_t traceback(int16_t *parent, int16_t *traceback, int16_t destinatio
 	return steps;
 }
 
-static void flip_array(int16_t *source, int16_t *target, uint16_t size){
+static void flip_array(int16_t *source, int16_t *target, int16_t size){
 	uint16_t i;
 
 	for (i = 0; i < size; i++){

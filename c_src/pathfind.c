@@ -34,18 +34,19 @@ int16_t find_path(uint8_t level, int *map, int16_t *route, int16_t start_x, int1
 decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int16_t angle){
 	int16_t current = conv_location(x, y);
 	int16_t i, rel_direction, current_direction;	//next direction => 0=north, 1=south, 2=east, 3=west
-	
+	uint8_t in_bound = 0;
 
 	for (i = 0; i < steps; i++){
 		if (*(route + i) == current){
 			current = i;
+			in_bound = 1;
 			break;
 		}
 	}
 
-	// if (current == *(route + 0)){
-	// 	return STRAIGHT;
-	// }
+	if (in_bound == 0){
+		return OUT_OF_BOUNDS;
+	}
 
 	printf("current y = %i\n", *(route + current)/MAP_WIDTH);
 	printf("next y = %i\n", *(route + current + 1)/MAP_WIDTH);
