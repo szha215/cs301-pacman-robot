@@ -40,8 +40,8 @@ decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int
 		}
 	}
 
-	if (current == -1){
-		return STOP;
+	if (current == *(route + 0){
+		return STRAIGHT;
 	}
 
 	if (*(route + current + 1)/MAP_WIDTH < *(route + current)/MAP_WIDTH){	//North
@@ -95,11 +95,11 @@ int8_t are_we_there_yet(int16_t current_x, int16_t current_y, int16_t dest_x, in
 }
 
 static int16_t round_angle(int16_t angle){
-	if (angle < 10 && angle > 350){
+	if (angle < 20 && angle > 340){
 		return 0;
-	} else if (angle < 100 && angle > 80){
+	} else if (angle < 110 && angle > 70){
 		return 90;
-	} else if (angle < 190 && angle > 170){
+	} else if (angle < 200 && angle > 160){
 		return 180;
 	} else {
 		return 270;
