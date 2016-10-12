@@ -61,10 +61,12 @@ decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int
 	} else {
 		printf("wrong rel_direction\n");
 	}
-
+	printf("INPUT ANGLE = %i\n", angle);
 	printf("RELATIVE ANGLE = %i\n", rel_direction);
 
 	current_direction = round_angle(angle/10);
+
+	printf("CURRENT ANGLE = %i\n", current_direction);
 
 	if (current_direction == rel_direction){
 		return STRAIGHT;
@@ -110,7 +112,7 @@ int8_t are_we_there_yet(int16_t current_x, int16_t current_y, int16_t dest_x, in
 }
 
 static int16_t round_angle(int16_t angle){
-	if (angle < 20 && angle > 340){
+	if (angle < 20 || angle > 340){
 		return 0;
 	} else if (angle < 110 && angle > 70){
 		return 90;
