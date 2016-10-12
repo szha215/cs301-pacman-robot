@@ -7,7 +7,7 @@
 // other functions
 int printMap(int posX, int posY);
 void clrscr();
-void waitFor (clock_t delay);
+void waitFor (float delay);
 int rng(int max);
 
 void rule_00(); // random rule
@@ -41,15 +41,19 @@ int dX, dY;
 
 int main() {
 	// y = 0 ~ 14  x = 0 ~ 18 dimensions
+	clock_t t0, t1;
+	float dfs_time = 0;
 	int rule = 0;
-	int wait = 0;
+	float wait = 0;
 	// mode select
+	
 	clrscr();
 	printf("\n Travel rule (0 ~ 5): ");
 	scanf("%d", &rule);
 	clrscr();
-	printf("\n Wait mode? (1 = Yes): ");
-	scanf("%d", &wait);
+
+	printf("\n Wait time: (in seconds): ");
+	scanf("%f", &wait);
 
 	int i = 0;
 	int timeLimit = 10 * 60;
@@ -63,12 +67,19 @@ int main() {
 	if (rule == 5){
 		path = (int*)malloc(path_size * sizeof(int));
 		memcpy(t_map,map,sizeof(int)*15*19);
+		t0 = clock();
 		generate_path(path);
+		t1 = clock();
+		dfs_time = t1 - t0;
+		printf("Path found in: %0.2fseconds\n", (float)(dfs_time)/CLOCKS_PER_SEC);
 		memset(t_map,0,sizeof(int)*15*19);
+		waitFor(2);
 	}
-	waitFor(3);
+
+	waitFor(1);
 
 	// process rule
+	t0 = clock();
 	while (i < timeLimit){
 		food = printMap(posX, posY);
 		printf("PosX: %d PosY: %d\n", posX, posY);
@@ -97,11 +108,10 @@ int main() {
 			break;
 		}
 
-		if (wait == 1){
-			waitFor(1);
-		}
+		waitFor(wait);
 		i++;
 	}
+	t1 = clock();
 	// random rule statistics
 	if (rule == 0){
 		int j;
@@ -109,12 +119,13 @@ int main() {
 			printf("Rule 0%d: %d\n", j + 1, ruleUse[j]);
 		}
 	}else if (rule == 5){
+		printf("DFS Path found in: %0.2fseconds\n", (float)(dfs_time)/CLOCKS_PER_SEC);
 		printf("DFS Iterations: %d\n", i);
 	}
 	// end statistics
 	printf("Time elapsed: %0.2f min\n", ((float)i/60.0));
 	printf("Food remaining: %d\n", food);
-
+	printf("\nSimulation Time: %0.2fseconds\n", (float)(t1 - t0)/CLOCKS_PER_SEC);
     return 0;
 }
 
@@ -154,9 +165,9 @@ void clrscr(){
 }
 
 // delay function
-void waitFor (clock_t delay) {
-	clock_t t = clock() + (delay * CLOCKS_PER_SEC);
-	while (clock() < t);
+void waitFor (float delay) {
+	float t1 = (float)(clock() + (delay * CLOCKS_PER_SEC));
+	while ((float)(clock()) < t1){};
 }
 
 // RNG between 1 and max
@@ -439,34 +450,41 @@ void recurse_dfs(int* path){
 
 	addPath(path);	
 
-	
-	if (t_map[dY - 1][dX] == 0){ // north
-		dY -= 1;
-		recurse_dfs(path);
-		dX = tX;
-		dY = tY;
-		addPath(path);	
+	if (dY != 0){ // out bounds check
+		if (t_map[dY - 1][dX] == 0){ // north
+			dY -= 1;
+			recurse_dfs(path);
+			dX = tX;
+			dY = tY;
+			addPath(path);	
+		}
 	}
-	if (t_map[dY + 1][dX] == 0){ // south
-		dY += 1;
-		recurse_dfs(path);
-		dX = tX;
-		dY = tY;
-		addPath(path);	
+	if (dY != 14){
+		if (t_map[dY + 1][dX] == 0){ // south
+			dY += 1;
+			recurse_dfs(path);
+			dX = tX;
+			dY = tY;
+			addPath(path);	
+		}
 	}
-	if (t_map[dY][dX - 1] == 0){ // west
-		dX -= 1;
-		recurse_dfs(path);
-		dX = tX;
-		dY = tY;
-		addPath(path);	
+	if (dX != 0){
+		if (t_map[dY][dX - 1] == 0){ // west
+			dX -= 1;
+			recurse_dfs(path);
+			dX = tX;
+			dY = tY;
+			addPath(path);	
+		}
 	}
-	if (t_map[dY][dX + 1] == 0){ // east
-		dX += 1;
-		recurse_dfs(path);
-		dX = tX;
-		dY = tY;
-		addPath(path);	
+	if (dX != 18){
+		if (t_map[dY][dX + 1] == 0){ // east
+			dX += 1;
+			recurse_dfs(path);
+			dX = tX;
+			dY = tY;
+			addPath(path);	
+		}
 	}
 }
 
