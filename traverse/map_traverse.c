@@ -28,92 +28,16 @@ int posY = 13;
 //dfs declarations
 void recurse_dfs(int* path);
 int convDigi(int x, int y);
+void rule_dfs(int* path,int *i);
 void generate_path(int* path);
-void addPath();
+void addPath(int *path);
 int food_count();
 int path_size = 300;
 int t_map[15][19];
 int path_i = 0;
 int dX, dY;
 
-void generate_path(int* path){
-	dX = posX;
-	dY = posY;
-	recurse_dfs(path);
-}
 
-void addPath(int *path){
-	printf("%d %d dxdy: %d %d food: %d\n", convDigi(dX,dY), t_map[dY][dX], dX, dY, food_count());
-	path[path_i] = convDigi(dX,dY);
-	t_map[dY][dX] = 2;
-	path_i++;
-	if (path_i >= path_size){
-		path_size += 300;
-		path = (int*)realloc(path, path_size);
-	}
-}
-
-void recurse_dfs(int* path){
-	int tX = dX;
-	int tY = dY;
-
-	addPath(path);	
-
-	
-	if (t_map[dY - 1][dX] == 0){
-		dY -= 1;
-		recurse_dfs(path);
-		dX = tX;
-		dY = tY;
-		addPath(path);	
-	}
-	if (t_map[dY + 1][dX] == 0){
-		dY += 1;
-		recurse_dfs(path);
-		dX = tX;
-		dY = tY;
-		addPath(path);	
-	}
-	if (t_map[dY][dX - 1] == 0){
-		dX -= 1;
-		recurse_dfs(path);
-		dX = tX;
-		dY = tY;
-		addPath(path);	
-	}
-	if (t_map[dY][dX + 1] == 0){
-		dX += 1;
-		recurse_dfs(path);
-		dX = tX;
-		dY = tY;
-		addPath(path);	
-	}
-	if (food_count() == 0){
-		return;
-	}
-}
-
-int food_count(){
-	int cnt = 0, i, j;
-	for (i = 0; i < 15; i++){ // y
-		for (j = 0; j < 19; j++){ // x
-			if (t_map[i][j] == 0){
-				cnt++;
-			}
-		}
-	}
-	return cnt;
-}
-
-void rule_dfs(int* path,int *i){
-	posX = path[*(i)] % 19;
-	posY = path[*(i)] / 19;
-	printf("path[]: %d posX: %d posY: %d\n", path[*(i)],posX, posY);
-}
-
-int convDigi(int x, int y){
-	return y * 19 + x;
-}
 
 int main() {
 	// y = 0 ~ 14  x = 0 ~ 18 dimensions
@@ -137,7 +61,7 @@ int main() {
 	food = printMap(posX, posY);
 
 	if (rule == 5){
-		path = (int*)calloc(path_size,sizeof(int));
+		path = (int*)malloc(path_size * sizeof(int));
 		memcpy(t_map,map,sizeof(int)*15*19);
 		generate_path(path);
 		memset(t_map,0,sizeof(int)*15*19);
@@ -147,16 +71,17 @@ int main() {
 	// process rule
 	while (i < timeLimit){
 		food = printMap(posX, posY);
+		printf("PosX: %d PosY: %d\n", posX, posY);
 		if (food == 0){
 			break;
 		}
 		map[posY][posX] = 2;
 
-		if (rule == 0){
+		if (rule == 0){ // random
 			rule_00();
-		}else if (rule == 1){
+		}else if (rule == 1){ // turn clockwise priority
 			rule_01();
-		}else if (rule == 2){
+		}else if (rule == 2){ // force turn clockwise
 			rule_02();
 		}else if (rule == 3){
 			rule_03();
@@ -167,7 +92,7 @@ int main() {
 			if (i >= path_i){
 				break;
 			}
-			printf("i: %d path_i: %d food: %d\n", i, path_i, food);
+			printf("Progress: %d/%d\n", i, path_i);
 		}else {
 			break;
 		}
@@ -183,6 +108,8 @@ int main() {
 		for (j = 0; j < 4; j++){
 			printf("Rule 0%d: %d\n", j + 1, ruleUse[j]);
 		}
+	}else if (rule == 5){
+		printf("DFS Iterations: %d\n", i);
 	}
 	// end statistics
 	printf("Time elapsed: %0.2f min\n", ((float)i/60.0));
@@ -196,7 +123,7 @@ int printMap(int posX, int posY){
 	int cnt = 0; // number of food
 
 	clrscr();
-	printf ("=========+MAP 9+=========\n\n   ");
+	printf ("=========+ MAP +=========\n\n   ");
 	int i, j;
 	for (i = 0; i < 15; i++){ // y
 		for (j = 0; j < 19; j++){ // x
@@ -483,4 +410,83 @@ void rule_04 (){
 			direction = EAST;
 		}	
 	}
+}
+
+void generate_path(int* path){
+	dX = posX;
+	dY = posY;
+	recurse_dfs(path);
+	printf("%d >> food:%d\n", path_i, food_count());
+}
+
+void addPath(int *path){
+	if (food_count() == 0){
+		return;
+	}
+	printf("%d >> dXdY:(%d,%d) food:%d\n", path_i, dX, dY, food_count());
+	path[path_i] = convDigi(dX,dY); // add to list
+	t_map[dY][dX] = 2; // set to seen
+	path_i++;
+	if (path_i >= path_size){ // overflow check
+		path_size += 300;
+		path = (int*)realloc(path, path_size);
+	}	
+}
+
+void recurse_dfs(int* path){
+	int tX = dX;
+	int tY = dY;
+
+	addPath(path);	
+
+	
+	if (t_map[dY - 1][dX] == 0){ // north
+		dY -= 1;
+		recurse_dfs(path);
+		dX = tX;
+		dY = tY;
+		addPath(path);	
+	}
+	if (t_map[dY + 1][dX] == 0){ // south
+		dY += 1;
+		recurse_dfs(path);
+		dX = tX;
+		dY = tY;
+		addPath(path);	
+	}
+	if (t_map[dY][dX - 1] == 0){ // west
+		dX -= 1;
+		recurse_dfs(path);
+		dX = tX;
+		dY = tY;
+		addPath(path);	
+	}
+	if (t_map[dY][dX + 1] == 0){ // east
+		dX += 1;
+		recurse_dfs(path);
+		dX = tX;
+		dY = tY;
+		addPath(path);	
+	}
+}
+
+int food_count(){
+	int cnt = 0, i, j;
+	for (i = 0; i < 15; i++){ // y
+		for (j = 0; j < 19; j++){ // x
+			if (t_map[i][j] == 0){
+				cnt++;
+			}
+		}
+	}
+	return cnt;
+}
+
+void rule_dfs(int* path,int *i){
+	posX = path[*(i)] % 19;
+	posY = path[*(i)] / 19;
+}
+
+int convDigi(int x, int y){
+	return y * 19 + x;
 }
