@@ -22,6 +22,10 @@
 #define IN_LINE 1
 #define OUT_LINE 0
 
+
+volatile uint8 turned;
+volatile uint8 turn_reset;
+
 uint8 button_flag;
     
     
@@ -37,6 +41,7 @@ typedef void motion_state_logic(struct motion_state*,decision_type decision, upd
 struct motion_state{
 	motion_state_logic* next_state;
 	motion_type current_motion;
+	uint8 turned;
 }motion_state;
 void start_sensor_isr();
 

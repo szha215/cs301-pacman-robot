@@ -25,7 +25,7 @@ void init_FSM(){
 void FSM(){
     struct State CS;
     struct motion_state motion_CS;
-    motion_CS.next_state = motion_stop_buffer;
+    motion_CS.next_state = motion_stop;
     CS.next_state = calculate;
     init_FSM();
 
@@ -61,8 +61,9 @@ void calculate(struct State* state,motion_type current_motion){
     while(!is_handled()){ check_RF(state->rf_data);}
     clear_handled();
     state->route = calloc(285,sizeof(int16_t));
-    state->steps = find_path(2,*mapp,state->route,state->rf_data->robot_xpos,state->rf_data->robot_ypos,food_packetss[0]);
-    state->next_state = update;
+    state->steps = find_path(2,*map,state->route,state->rf_data->robot_xpos,state->rf_data->robot_ypos,food_packets[0][0],food_packets[0][1]);
+    state->current_decision = STRAIGHT;
+    state->next_state = execute;
 
 
 }
@@ -73,26 +74,28 @@ void execute(struct State* state,motion_type current_motion){
     //if the robot is turning that means the current vertex has been visited
     //then update to the next instruction
     //should give some feedback to the outer path-find module which contains all the instruction
-    if(current_motion == GOING_STRAIGHT){
-        state->fsm_state = STATE_IN_PROGRESS;
-        state->current_decision = STRAIGHT;
-    }
-    else if(current_motion == AT_INTERSECTION){
+    
+    if(current_motion == AT_INTERSECTION){
         state->next_state = update;
     }
-    else{
+    else if(current_motion == GOING_STRAIGHT){
+        LED_Write(1);
+        state->fsm_state = STATE_IN_PROGRESS;
+        //state->current_decision = STRAIGHT;
         state->next_state = execute;
     }
 }
 
 void update(struct State* state,motion_type current_motion){
     //update next instruction
+    decision_type next_decision;
     while(!is_handled()){check_RF(state->rf_data);}
     clear_handled();
-    decision_type next_decision;
+    
     next_decision = next_turn(state->route,state->steps,state->rf_data->robot_xpos,state->rf_data->robot_ypos,state->rf_data->robot_orientation);
-    state->fsm_state = STATE_UPDATED;
+    
     state->current_decision = next_decision;
+    state->fsm_state = STATE_UPDATED;
     state->next_state = execute;
 }
 

@@ -4,7 +4,7 @@
 
 
 
-int map[15][19];
+extern int map[15][19];
 
 extern int food_packets[5][2];
 

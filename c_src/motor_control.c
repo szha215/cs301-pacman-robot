@@ -12,12 +12,7 @@
 
 #include "motor_control.h"
 
-CY_ISR(timer_isr){
-    set_quad_dec(QuadDec_M1_GetCounter(),QuadDec_M2_GetCounter());
-     // QuadDec_M1_SetCounter(0);
-     // QuadDec_M2_SetCounter(0);
-    set_quad_dec_flag(1);
-}
+
 
 void init_motor_control(){
     // motor_parameters = init_motor_params(predef_velocity,predef_distance);
@@ -42,8 +37,7 @@ void init_motor_control(){
     PWM_M2_Start();
     QuadDec_M1_Start();
     QuadDec_M2_Start();
-    Timer_TS_Start();
-    isr_TS_StartEx(timer_isr);
+    
 }
 
 motor_params* init_motor_params(uint8 predef_velocity, uint16 predef_distance){

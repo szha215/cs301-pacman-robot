@@ -26,6 +26,9 @@
 #define TRACK 0
 #define WALL 1
 
+
+
+
 typedef enum {UNKNOWN, VISITED, EXPLORED} status;
 
 int16_t astar(int *map, int16_t width, int16_t height, int16_t *route, int16_t start, int16_t destination);

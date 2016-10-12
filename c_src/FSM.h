@@ -22,7 +22,7 @@
 #include "RF_handler.h"
 #include "defines.h"
 #include "pathfind.h"
-
+#include "map.h"
 
 
 //#define ANGLE_THRESHOLD 20

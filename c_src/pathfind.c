@@ -43,9 +43,9 @@ decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int
 		}
 	}
 
-	if (current == *(route + 0)){
-		return STRAIGHT;
-	}
+	// if (current == *(route + 0)){
+	// 	return STRAIGHT;
+	// }
 
 	printf("current y = %i\n", *(route + current)/MAP_WIDTH);
 	printf("next y = %i\n", *(route + current + 1)/MAP_WIDTH);

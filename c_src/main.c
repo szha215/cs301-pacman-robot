@@ -12,7 +12,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "map.h"
+
 #include "project.h"
 #include "RF_Handler.h"
 #include "motor_control.h"
@@ -24,6 +24,13 @@
 //DEFINED DISTANCE(CM) AND VELOCITY(CM/S)
 #define PREDEF_DISTANCE 100
 #define PREDEF_VELOCTIY 15
+
+
+
+
+#define TOGGLE_LED LED_Write(~LED_Read())
+#define IN_LINE 1
+#define OUT_LINE 0
 
 //* ========================================
 #define PACKETSIZE 32
@@ -108,6 +115,22 @@ CY_ISR(adcISR){
 }
 
 //=========================================
+
+
+
+
+
+CY_ISR(isr_s_timer){
+    if (start == 1){
+        s_fl = S_FL_Read();
+        s_fr = S_FR_Read();
+        s_m = S_M_Read();
+        s_b = S_B_Read();
+    }
+}
+
+//------------
+//SENSOR ISR READINGS
 
 
 int main()
@@ -247,6 +270,35 @@ void handle_usb()
     static uint8 usbStarted = FALSE;
     static uint16 usbBufCount = 0;
     uint8 c; 
+    
 
-
-/* [] END OF FILE */
+    if (!usbStarted)
+    {
+        if (USBUART_GetConfiguration())
+        {
+            USBUART_CDC_Init();
+            usbStarted = TRUE;
+        }
+    }
+    else
+    {
+        if (USBUART_DataIsReady() != 0)
+        {  
+            c = USBUART_GetChar();
+            if ((c == 13) || (c == 10))
+            {
+                entry[usbBufCount]= '\0';
+                strcpy(rxString,entry);
+                usbBufCount = 0;
+                rx_recieved = 1;
+            }
+            else 
+            {
+                if (((c == CHAR_BACKSP) || (c == CHAR_DEL) ) && (usbBufCount > 0) )
+                    usbBufCount--;
+                else
+                    entry[usbBufCount++] = c;  
+            }
+        }
+    }     
+}
