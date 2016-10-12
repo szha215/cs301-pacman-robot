@@ -12,15 +12,15 @@
 
 #include "pathfind.h"
 
-int16_t find_path(uint8_t level, int *map, uint16_t *route, uint16_t start_x, uint16_t start_y, uint16_t dest_x, uint16_t dest_y){
+int16_t find_path(uint8_t level, int *map, int16_t *route, int16_t start_x, int16_t start_y, int16_t dest_x, int16_t dest_y){
 
-	uint16_t start = conv_location(start_x, start_y);
-	uint16_t destination = conv_location(dest_x, dest_y);
+	int16_t start = conv_location(start_x, start_y);
+	int16_t destination = conv_location(dest_x, dest_y);
 
 	if (level == 1){
 
 	} else if (level == 2){
-		return astar(map, MAP_WIDTH, MAP_HEIGHT, route, start, destinations);
+		return astar(map, MAP_WIDTH, MAP_HEIGHT, route, start, destination);
 	} else if (level == 3){
 
 	}
@@ -28,7 +28,7 @@ int16_t find_path(uint8_t level, int *map, uint16_t *route, uint16_t start_x, ui
 	return -1;
 }
 
-decision_type next_turn(int16_t *route, uint16_t steps, uint16_t x, uint16_t y, uint16_t angle){
+decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int16_t angle){
 	int16_t current = conv_location(x, y);
 	int16_t i, rel_direction, current_direction;	//next direction => 0=north, 1=south, 2=east, 3=west
 	int16_t current_step = -1;
@@ -69,19 +69,30 @@ decision_type next_turn(int16_t *route, uint16_t steps, uint16_t x, uint16_t y, 
 
 }
 
-int16_t conv_location(uint16_t x, uint16_t y){
+int16_t conv_location(int16_t x, int16_t y){
 	float x_f = x/MAP_HEIGHT_PIXEL * MAP_WIDTH;
 	float y_f = y/MAP_HEIGHT_PIXEL * MAP_HEIGHT;
 
 	return ((int16_t)y_f) * MAP_WIDTH + ((int16_t)x_f/MAP_WIDTH_PIXEL);
 }
 
-void clear_route(int16_t *route, uint16_t steps){
-	uint16_t i;
+void clear_route(int16_t *route, int16_t steps){
+	int16_t i;
 
 	for (i = 0; i < steps; i++){
 		*(route + i) = 0;
 	}
+}
+
+int8_t are_we_there_yet(int16_t current_x, int16_t current_y, int16_t dest_x, int16_t dest_y){
+	int16_t current = conv_location(current_x, current_y);
+	int16_t destination = conv_location(dest_x, dest_y);
+
+	if (current == destination){
+		return 1;
+	}
+
+	return 0;
 }
 
 static int16_t round_angle(int16_t angle){
