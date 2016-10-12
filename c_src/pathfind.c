@@ -47,6 +47,9 @@ decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int
 		return STRAIGHT;
 	}
 
+	printf("current y = %i\n", *(route + current)/MAP_WIDTH);
+	printf("next y = %i\n", *(route + current + 1)/MAP_WIDTH);
+
 	if (*(route + current + 1)/MAP_WIDTH < *(route + current)/MAP_WIDTH){	//North
 		rel_direction = 90;
 	}else if (*(route + current + 1)/MAP_WIDTH > *(route + current)/MAP_WIDTH){	//South
@@ -55,7 +58,11 @@ decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int
 		rel_direction = 0;
 	}else if (*(route + current + 1)%MAP_WIDTH < *(route + current)%MAP_WIDTH){	//West
 		rel_direction = 180;
+	} else {
+		printf("wrong rel_direction\n");
 	}
+
+	printf("RELATIVE ANGLE = %i\n", rel_direction);
 
 	current_direction = round_angle(angle/10);
 
@@ -72,8 +79,13 @@ decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int
 }
 
 int16_t conv_location(int16_t x, int16_t y){
-	float x_f = (float)x/MAP_HEIGHT_PIXEL * MAP_WIDTH;
+	float x_f = (float)x/MAP_WIDTH_PIXEL * MAP_WIDTH;
 	float y_f = (float)y/MAP_HEIGHT_PIXEL * MAP_HEIGHT;
+
+
+printf("conv_location = %i\n", ((int16_t)y_f) * MAP_WIDTH + ((int16_t)x_f%MAP_WIDTH));
+
+
 
 	return ((int16_t)y_f) * MAP_WIDTH + ((int16_t)x_f%MAP_WIDTH);
 }

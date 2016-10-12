@@ -39,7 +39,7 @@ int main(void){
 	route = (int16_t*)malloc(MAP_WIDTH * MAP_HEIGHT * sizeof(short));
 
 	//steps = astar(map, MAP_WIDTH, MAP_HEIGHT, route, 1*MAP_WIDTH+1, 13*MAP_WIDTH+17);
-	steps = find_path(2, map, route, 55, 360, 55, 155);
+	steps = find_path(2, map, route, 63, 380, 55, 155);
 	//free(a);
 
 	printf("\n======================== ASTAR end\n");
@@ -59,7 +59,26 @@ int main(void){
 		printf("\n");
 	}
 
+	int16_t x = 167;
+	int16_t y = 378;
 
+	decision_type decision = next_turn(route, steps, x, y, 50);
+
+	if (decision == STRAIGHT){
+		printf("decision = STRAIGHT\n");
+	}
+
+	if (decision == TURN_LEFT){
+		printf("decision = TURN_LEFT\n");
+	}
+
+	if (decision == TURN_RIGHT){
+		printf("decision = TURN_RIGHT\n");
+	}
+
+	if (decision == TURN_AROUND){
+		printf("decision = TURN_AROUND\n");
+	}
 	free(route);
 	return 0;
 }

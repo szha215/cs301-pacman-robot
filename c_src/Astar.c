@@ -94,13 +94,13 @@ int16_t astar(int *map, int16_t width, int16_t height, int16_t *route, int16_t s
 	printf("STEPS = %i\n", steps);
 	
 	for (i = 0; i < steps; i++){
-		printf("traced_route[%i] = %i, %i\n", i, *(traced_route+i)%MAP_WIDTH, *(traced_route+i)/MAP_WIDTH);
+		printf("traced_route[%i] = %i (%i, %i)\n", i, *(traced_route+i), *(traced_route+i)%MAP_WIDTH, *(traced_route+i)/MAP_WIDTH);
 	}
 	
 	flip_array(traced_route, route, steps);
 
 	for (i = 0; i < steps; i++){
-		printf("route[%i] = %i, %i\n", i, *(route+i)%MAP_WIDTH, *(route+i)/MAP_WIDTH);
+		printf("route[%i] = %i (%i, %i)\n", i, *(route+i),*(route+i)%MAP_WIDTH, *(route+i)/MAP_WIDTH);
 	}
 
 	//printf("closed [start] = %i\n", *(closed+start));
