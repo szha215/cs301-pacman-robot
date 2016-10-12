@@ -31,27 +31,26 @@ int16_t find_path(uint8_t level, int *map, int16_t *route, int16_t start_x, int1
 decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int16_t angle){
 	int16_t current = conv_location(x, y);
 	int16_t i, rel_direction, current_direction;	//next direction => 0=north, 1=south, 2=east, 3=west
-	int16_t current_step = -1;
 	
 
 	for (i = 0; i < steps; i++){
 		if (*(route + i) == current){
-			current_step = i;
+			current = i;
 			break;
 		}
 	}
 
-	if (current_step == -1){
+	if (current == -1){
 		return STOP;
 	}
 
-	if (*(route + current_step + 1)/MAP_WIDTH < *(route + current_step)/MAP_WIDTH){	//North
+	if (*(route + current + 1)/MAP_WIDTH < *(route + current)/MAP_WIDTH){	//North
 		rel_direction = 90;
-	}else if (*(route + current_step + 1)/MAP_WIDTH > *(route + current_step)/MAP_WIDTH){	//South
+	}else if (*(route + current + 1)/MAP_WIDTH > *(route + current)/MAP_WIDTH){	//South
 		rel_direction = 270;
-	}else if (*(route + current_step + 1)%MAP_WIDTH > *(route + current_step)%MAP_WIDTH){	//East
+	}else if (*(route + current + 1)%MAP_WIDTH > *(route + current)%MAP_WIDTH){	//East
 		rel_direction = 0;
-	}else if (*(route + current_step + 1)%MAP_WIDTH < *(route + current_step)%MAP_WIDTH){	//West
+	}else if (*(route + current + 1)%MAP_WIDTH < *(route + current)%MAP_WIDTH){	//West
 		rel_direction = 180;
 	}
 
