@@ -17,6 +17,9 @@ int16_t find_path(uint8_t level, int *map, int16_t *route, int16_t start_x, int1
 	int16_t start = conv_location(start_x, start_y);
 	int16_t destination = conv_location(dest_x, dest_y);
 
+	printf("FIND_PATH START = %i\n", start);
+	printf("FIND_PATH DEST  = %i\n", destination);
+
 	if (level == 1){
 
 	} else if (level == 2){
@@ -40,7 +43,7 @@ decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int
 		}
 	}
 
-	if (current == *(route + 0){
+	if (current == *(route + 0)){
 		return STRAIGHT;
 	}
 
@@ -69,10 +72,10 @@ decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int
 }
 
 int16_t conv_location(int16_t x, int16_t y){
-	float x_f = x/MAP_HEIGHT_PIXEL * MAP_WIDTH;
-	float y_f = y/MAP_HEIGHT_PIXEL * MAP_HEIGHT;
+	float x_f = (float)x/MAP_HEIGHT_PIXEL * MAP_WIDTH;
+	float y_f = (float)y/MAP_HEIGHT_PIXEL * MAP_HEIGHT;
 
-	return ((int16_t)y_f) * MAP_WIDTH + ((int16_t)x_f/MAP_WIDTH_PIXEL);
+	return ((int16_t)y_f) * MAP_WIDTH + ((int16_t)x_f%MAP_WIDTH);
 }
 
 void clear_route(int16_t *route, int16_t steps){

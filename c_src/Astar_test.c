@@ -39,7 +39,7 @@ int main(void){
 	route = (int16_t*)malloc(MAP_WIDTH * MAP_HEIGHT * sizeof(short));
 
 	//steps = astar(map, MAP_WIDTH, MAP_HEIGHT, route, 1*MAP_WIDTH+1, 13*MAP_WIDTH+17);
-	steps = find_path(2, map, route, 13*MAP_WIDTH+17, 1*MAP_WIDTH+1);
+	steps = find_path(2, map, route, 55, 360, 55, 155);
 	//free(a);
 
 	printf("\n======================== ASTAR end\n");
