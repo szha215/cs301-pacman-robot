@@ -12,11 +12,15 @@
 
 #include "pathfind.h"
 
-int16_t find_path(uint8_t level, int *map, uint16_t *route, uint16_t start, uint16_t destination){
+int16_t find_path(uint8_t level, int *map, uint16_t *route, uint16_t start_x, uint16_t start_y, uint16_t dest_x, uint16_t dest_y){
+
+	uint16_t start = conv_location(start_x, start_y);
+	uint16_t destination = conv_location(dest_x, dest_y);
+
 	if (level == 1){
 
 	} else if (level == 2){
-		return astar(map, MAP_WIDTH, MAP_HEIGHT, route, start, destination);
+		return astar(map, MAP_WIDTH, MAP_HEIGHT, route, start, destinations);
 	} else if (level == 3){
 
 	}
@@ -70,6 +74,14 @@ int16_t conv_location(uint16_t x, uint16_t y){
 	float y_f = y/MAP_HEIGHT_PIXEL * MAP_HEIGHT;
 
 	return ((int16_t)y_f) * MAP_WIDTH + ((int16_t)x_f/MAP_WIDTH_PIXEL);
+}
+
+void clear_route(int16_t *route, uint16_t steps){
+	uint16_t i;
+
+	for (i = 0; i < steps; i++){
+		*(route + i) = 0;
+	}
 }
 
 static int16_t round_angle(int16_t angle){

@@ -30,11 +30,13 @@
 #define MAP_WIDTH_PIXEL 1024.0
 #define MAP_HEIGHT_PIXEL 768.0
 
-int16_t find_path(uint8_t level, int *map, uint16_t *route, uint16_t start, uint16_t destination);
+int16_t find_path(uint8_t level, int *map, uint16_t *route, uint16_t start_x, uint16_t start_y, uint16_t dest_x, uint16_t dest_y);
 
 decision_type next_turn(int16_t *route, uint16_t steps, uint16_t x, uint16_t y, uint16_t angle);
 
 int16_t conv_location(uint16_t x, uint16_t y);
+
+void clear_route(int16_t *route, uint16_t steps);
 
 static int16_t round_angle(int16_t angle);
 
