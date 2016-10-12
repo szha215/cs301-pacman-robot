@@ -22,7 +22,7 @@
 #include "RF_handler.h"
 #include "defines.h"
 #include "pathfind.h"
-#include "map.h"
+
 
 
 //#define ANGLE_THRESHOLD 20
@@ -36,7 +36,7 @@ uint8 pid_start;
 uint8 rf_start;
 
 struct State;
-typedef void state_logic(struct State*,motion_type current_motion,decision_type decision_input);
+typedef void state_logic(struct State*,motion_type current_motion);
 
 struct State{
     state_logic* next_state;
@@ -54,10 +54,10 @@ void init_FSM();
 void FSM();
 
 //void start(struct State* state);
-void unknown(struct State* state,motion_type current_motion,decision_type decision_input);
-void calculate(struct State* state,motion_type current_motion,decision_type decision_input);
-void execute(struct State* state,motion_type current_motion,decision_type decision_input);
-void update(struct State* state,motion_type current_motion,decision_type decision_input);
+void unknown(struct State* state,motion_type current_motion);
+void calculate(struct State* state,motion_type current_motion);
+void execute(struct State* state,motion_type current_motion);
+void update(struct State* state,motion_type current_motion);
 uint8 get_pid_start();
 void set_pid_start(uint8 start);
 

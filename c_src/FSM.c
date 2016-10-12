@@ -25,22 +25,22 @@ void init_FSM(){
 void FSM(){
     struct State CS;
     struct motion_state motion_CS;
-    motion_CS.next_state = motion_straight;
-    CS.next_state = update;
+    motion_CS.next_state = motion_stop_buffer;
+    CS.next_state = calculate;
     init_FSM();
 
 
     //TODO:
     //Initialize all the motion and decision states 
-    CS.current_decision = TURN_RIGHT;
-    motion_CS.current_motion = STOPPED;
-    //decision flag of pathfinding results
-    decision_type decision = TURN_RIGHT; //pathfind variable
+    CS.current_decision = STOP;
 
+    motion_CS.current_motion = STOPPED;
+
+    CS.fsm_state = STATE_IN_PROGRESS;
     // CS <= NS; state updater
     for(;;){
         motion_CS.next_state(&motion_CS,CS.current_decision,CS.fsm_state);
-        CS.next_state(&CS,motion_CS.current_motion,decision);
+        CS.next_state(&CS,motion_CS.current_motion);
        
     }
 }
@@ -49,24 +49,25 @@ void FSM(){
 
 
 
-void unknown(struct State* state,motion_type current_motion,decision_type decision_input){
+void unknown(struct State* state,motion_type current_motion){
 
 }
 
-void calculate(struct State* state,motion_type current_motion,decision_type decision_input){
+void calculate(struct State* state,motion_type current_motion){
     //calculate the pathfind
     //maybe not needed for a star, but could still be needed in Level 1 or Level 3
     state->rf_data = rf_Handler_init();
 
     while(!is_handled()){ check_RF(state->rf_data);}
-    state->route = calloc(1,285 * sizeof(int16_t));
-    state->steps = find_path(2,*mapp,state->route,conv_location(state->rf_data->robot_xpos,state->rf_data->robot_ypos),food_packets_new[0]);
+    clear_handled();
+    state->route = calloc(285,sizeof(int16_t));
+    state->steps = find_path(2,*mapp,state->route,state->rf_data->robot_xpos,state->rf_data->robot_ypos,food_packetss[0]);
     state->next_state = update;
 
 
 }
 
-void execute(struct State* state,motion_type current_motion,decision_type decision_input){
+void execute(struct State* state,motion_type current_motion){
     //execute current instruction, which is automatic in the sub FSM
 
     //if the robot is turning that means the current vertex has been visited
@@ -76,7 +77,7 @@ void execute(struct State* state,motion_type current_motion,decision_type decisi
         state->fsm_state = STATE_IN_PROGRESS;
         state->current_decision = STRAIGHT;
     }
-    if(current_motion == AT_INTERSECTION){
+    else if(current_motion == AT_INTERSECTION){
         state->next_state = update;
     }
     else{
@@ -84,12 +85,12 @@ void execute(struct State* state,motion_type current_motion,decision_type decisi
     }
 }
 
-void update(struct State* state,motion_type current_motion,decision_type decision_input){
+void update(struct State* state,motion_type current_motion){
     //update next instruction
-    while(!is_handled){check_RF(state->rf_data);}
+    while(!is_handled()){check_RF(state->rf_data);}
+    clear_handled();
     decision_type next_decision;
     next_decision = next_turn(state->route,state->steps,state->rf_data->robot_xpos,state->rf_data->robot_ypos,state->rf_data->robot_orientation);
-
     state->fsm_state = STATE_UPDATED;
     state->current_decision = next_decision;
     state->next_state = execute;

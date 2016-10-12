@@ -69,6 +69,7 @@ void motion_straight(struct motion_state* m_state,decision_type decision, update
 
     if(s_l == IN_LINE || s_r == IN_LINE){
         m_state->current_motion = AT_INTERSECTION;
+        m_state->next_state = motion_stop_buffer;
     }
     else{
         m_state->current_motion = GOING_STRAIGHT;
@@ -125,34 +126,27 @@ void motion_adjust_right(struct motion_state* m_state,decision_type decision, up
 
 void motion_stop(struct motion_state* m_state,decision_type decision, update_states fsm_state){
     m_state->current_motion = STOPPED;
-
+    m_stop();
     if(decision == TURN_LEFT){
-        if(s_b == IN_LINE){
-            m_straight_slow();
-            if(s_l == IN_LINE){
-                m_state->next_state = motion_turn_left;
-            }
+        if(s_fl == IN_LINE || s_fr == IN_LINE){
+            m_state->next_state = motion_turning_buffer;
         }
         else{
-            m_stop();
-            m_state->next_state = motion_stop;
+            m_state->next_state = motion_turn_left;
         }
-
     }
     else if(decision == TURN_RIGHT){
-        if(s_b == IN_LINE){
-            m_straight_slow();
-            if(s_r == IN_LINE){
-                m_state->next_state = motion_turn_right;
-            }
+        if(s_fl == IN_LINE || s_fr == IN_LINE){
+            m_state->next_state = motion_turning_buffer;
         }
         else{
-            m_stop();
-            m_state->next_state = motion_stop;
+            m_state->next_state = motion_turn_right;
         }
     }
-    else{
-        m_stop();
+    else if(decision == STRAIGHT){
+        m_state->next_state = motion_straight;
+    }
+    else if(decision == STOP){
         m_state->next_state = motion_stop;
     }
 }
