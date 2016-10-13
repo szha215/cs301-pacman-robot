@@ -56,15 +56,17 @@ void unknown(struct State* state,motion_type current_motion){
 void calculate(struct State* state,motion_type current_motion){
     //calculate the pathfind
     //maybe not needed for a star, but could still be needed in Level 1 or Level 3
-    state->rf_data = rf_Handler_init();
+    //state->rf_data = rf_Handler_init();
 
-    while(!is_handled()){ check_RF(state->rf_data);}
-    clear_handled();
-    state->route = calloc(285,sizeof(int16_t));
-    state->steps = find_path(2,*map,state->route,state->rf_data->robot_xpos,state->rf_data->robot_ypos,food_packets[0][0],food_packets[0][1]);
+    // while(!is_handled()){ check_RF(state->rf_data);}
+    // clear_handled();
+    // state->route = calloc(285,sizeof(int16_t));
+    // state->steps = find_path(2,*map,state->route,state->rf_data->robot_xpos,state->rf_data->robot_ypos,food_packets[0][0],food_packets[0][1]);
     state->current_decision = STRAIGHT;
     state->next_state = execute;
-
+    // if(state->steps == 9){
+    //     LED_Write(1);
+    // }
 
 }
 
@@ -74,12 +76,11 @@ void execute(struct State* state,motion_type current_motion){
     //if the robot is turning that means the current vertex has been visited
     //then update to the next instruction
     //should give some feedback to the outer path-find module which contains all the instruction
-    
     if(current_motion == AT_INTERSECTION){
         state->next_state = update;
     }
     else if(current_motion == GOING_STRAIGHT){
-        LED_Write(1);
+        //LED_Write(1);
         state->fsm_state = STATE_IN_PROGRESS;
         //state->current_decision = STRAIGHT;
         state->next_state = execute;
@@ -88,15 +89,15 @@ void execute(struct State* state,motion_type current_motion){
 
 void update(struct State* state,motion_type current_motion){
     //update next instruction
-    decision_type next_decision;
-    while(!is_handled()){check_RF(state->rf_data);}
-    clear_handled();
+    // decision_type next_decision;
+    // while(!is_handled()){check_RF(state->rf_data);}
+    // clear_handled();
     
-    next_decision = next_turn(state->route,state->steps,state->rf_data->robot_xpos,state->rf_data->robot_ypos,state->rf_data->robot_orientation);
-    
-    state->current_decision = next_decision;
+    // next_decision = next_turn(state->route,state->steps,state->rf_data->robot_xpos,state->rf_data->robot_ypos,state->rf_data->robot_orientation);
+    state->current_decision = STRAIGHT;
     state->fsm_state = STATE_UPDATED;
     state->next_state = execute;
+    
 }
 
 

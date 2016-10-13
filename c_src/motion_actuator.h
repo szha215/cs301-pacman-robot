@@ -24,7 +24,6 @@
 
 
 volatile uint8 turned;
-volatile uint8 turn_reset;
 
 uint8 button_flag;
     
@@ -62,4 +61,5 @@ void motion_turn_right(struct motion_state* m_state,decision_type decision, upda
 void motion_turn_around(struct motion_state* m_state,decision_type decision, update_states fsm_state);
 void motion_turning_buffer(struct motion_state* m_state,decision_type decision, update_states fsm_state);
 void motion_stop_buffer(struct motion_state* m_state,decision_type decision, update_states fsm_state);
+void block_intersection_sensors();
 #endif

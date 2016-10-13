@@ -35,6 +35,8 @@ uint8 pid_start;
 
 uint8 rf_start;
 
+
+
 struct State;
 typedef void state_logic(struct State*,motion_type current_motion);
 
