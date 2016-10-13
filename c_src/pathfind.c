@@ -71,15 +71,20 @@ decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int
 	current_direction = round_angle(angle/10);
 
 	printf("CURRENT ANGLE = %i\n", current_direction);
+	printf("REL_ANGLE = %i\n", rel_direction);
 
-	if (current_direction == rel_direction){
-		return STRAIGHT;
-	} else if (current_direction >= rel_direction){
+	if(abs(current_direction - rel_direction) == 180){
+		return TURN_AROUND;
+	} else if (current_direction == 0 && rel_direction == 270){
 		return TURN_RIGHT;
-	} else if (current_direction <= rel_direction){
+	} else if (current_direction == rel_direction){
+		return STRAIGHT;
+	} else if (current_direction > rel_direction){
+		return TURN_RIGHT;
+	} else if (current_direction < rel_direction){
 		return TURN_LEFT;
 	} else {
-		return TURN_AROUND;
+		return STOP;
 	}
 
 }
