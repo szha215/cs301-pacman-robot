@@ -54,44 +54,16 @@ typedef struct data_main {
 } data_main;
 
 
-typedef struct straight_line_data {
-	uint16	init_x;
-	uint16	init_y;
-	uint16	distance_px;
-	uint16	init_angle;
-	uint16	current_angle;
-	uint16	target_x;
-	uint16	target_y;
-	uint16 	current_x;
-	uint16	current_y;
-}straight_line_data;
 
-
-
-uint16 init_x;
-uint16 init_y;
-uint16 init_angle;
 // process rf string into struct
 // in_string = string to decode
 // out_struct = struct to allocate decoded values
 void handle_rx(char* in_string, data_main *out_struct);
 data_main* rf_Handler_init();
-straight_line_data* init_straight_line_data(uint16 distance,uint16 angle);
-void init_line_pos(straight_line_data* line_data_ptr,uint16 x, uint16 y, uint16 angle);
 void check_RF(data_main* RF_data);
 
 uint8 is_handled();
 void clear_handled();
-//both angle in rad
-//both distance in px
-uint16 get_target_x(uint16 init_X,uint16 distance,float angle);
-uint16 get_target_y(uint16 init_Y,uint16 distance,float angle);
-//return 0 if on-line
-//1 if needs to adjust right (on the left)
-//2 if needs to adjust left (on the right)
-uint8 check_current_x(straight_line_data* line_data_ptr,uint16 current_x,uint16 current_y);
-uint8 check_current_y(data_main* data_main_ptr,straight_line_data* straight_line_data_ptr);
 
-inline float deg_to_rad(float deg);
 #endif
 /* [] END OF FILE */

@@ -28,8 +28,10 @@ void FSM(){
     motion_CS.next_state = motion_stop;
     CS.next_state = calculate;
     init_FSM();
-
-
+    data_main* rf_data;
+    rf_data = rf_Handler_init();
+    while(!is_handled()){ check_RF(rf_data);}
+    clear_handled();
     //TODO:
     //Initialize all the motion and decision states 
     CS.current_decision = STOP;
@@ -40,7 +42,7 @@ void FSM(){
     // CS <= NS; state updater
     for(;;){
         motion_CS.next_state(&motion_CS,CS.current_decision,CS.fsm_state);
-        CS.next_state(&CS,motion_CS.current_motion);
+        CS.next_state(&CS,motion_CS.current_motion,rf_data);
        
     }
 }
@@ -49,28 +51,37 @@ void FSM(){
 
 
 
-void unknown(struct State* state,motion_type current_motion){
+void unknown(struct State* state,motion_type current_motion,data_main *rf_data){
 
 }
 
-void calculate(struct State* state,motion_type current_motion){
+void calculate(struct State* state,motion_type current_motion,data_main *rf_data){
     //calculate the pathfind
     //maybe not needed for a star, but could still be needed in Level 1 or Level 3
-    //state->rf_data = rf_Handler_init();
-
-    // while(!is_handled()){ check_RF(state->rf_data);}
-    // clear_handled();
-    // state->route = calloc(285,sizeof(int16_t));
-    // state->steps = find_path(2,*map,state->route,state->rf_data->robot_xpos,state->rf_data->robot_ypos,food_packets[0][0],food_packets[0][1]);
+    // state->rf_data = rf_Handler_init();
+    // data_main* temp_rf_data;
+    // temp_rf_data = state->rf_data;
+    while(!is_handled()){ check_RF(rf_data);}
+    clear_handled();
+    state->route = calloc(285,sizeof(int16_t));
+    state->steps = find_path(2,*map,state->route,rf_data->robot_xpos,rf_data->robot_ypos,food_packets[0][0],food_packets[0][1]);
+    // state->steps = find_path(2,*map,state->route,63,380,food_packets[0][0],food_packets[0][1]);
     state->current_decision = STRAIGHT;
     state->next_state = execute;
-    // if(state->steps == 9){
-    //     LED_Write(1);
-    // }
+    if(state->steps == -2){
+        LED_Write(1);
+    }
+    // char tempString[BUF_SIZE];
+    // for(;;){
+    //     sprintf(tempString,"\r\n start X: %d\r\n",rf_data->robot_xpos); usbPutString(tempString);
+    //     sprintf(tempString,"\r\n start Y: %d\r\n",rf_data->robot_ypos); usbPutString(tempString);
+    //     sprintf(tempString,"\r\n start Angle: %d\r\n",rf_data->robot_orientation); usbPutString(tempString);
+    //     sprintf(tempString,"\r\n ===================\r\n"); usbPutString(tempString);
 
+    // }
 }
 
-void execute(struct State* state,motion_type current_motion){
+void execute(struct State* state,motion_type current_motion,data_main *rf_data){
     //execute current instruction, which is automatic in the sub FSM
 
     //if the robot is turning that means the current vertex has been visited
@@ -87,14 +98,14 @@ void execute(struct State* state,motion_type current_motion){
     }
 }
 
-void update(struct State* state,motion_type current_motion){
+void update(struct State* state,motion_type current_motion,data_main *rf_data){
     //update next instruction
-    // decision_type next_decision;
-    // while(!is_handled()){check_RF(state->rf_data);}
-    // clear_handled();
+    decision_type next_decision;
+    while(!is_handled()){check_RF(rf_data);}
+    clear_handled();
     
-    // next_decision = next_turn(state->route,state->steps,state->rf_data->robot_xpos,state->rf_data->robot_ypos,state->rf_data->robot_orientation);
-    state->current_decision = STRAIGHT;
+    next_decision = next_turn(state->route,state->steps,rf_data->robot_xpos,rf_data->robot_ypos,rf_data->robot_orientation);
+    state->current_decision = next_decision;
     state->fsm_state = STATE_UPDATED;
     state->next_state = execute;
     

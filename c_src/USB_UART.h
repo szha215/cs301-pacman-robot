@@ -34,7 +34,7 @@
 char entry[BUF_SIZE];
 void usbPutString(char *s);
 void usbPutChar(char c);
-void handle_usb();
+
 
 
 

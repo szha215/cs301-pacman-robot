@@ -131,7 +131,7 @@ int main()
     
     dip_val = dip_read();
     
-
+    USBUART_Start(0,USBUART_5V_OPERATION);
     if(dip_val == 1){
         CyDelay(1000);
         FSM();
@@ -140,7 +140,7 @@ int main()
     
     data_main* RF_data;
     RF_data = rf_Handler_init();
-    USBUART_Start(0,USBUART_5V_OPERATION);
+ 
     char tempString[BUF_SIZE];
     // Something critical happened if the program gets here
     for(;;)

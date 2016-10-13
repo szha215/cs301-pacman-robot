@@ -23,7 +23,7 @@
 #include "defines.h"
 #include "pathfind.h"
 #include "map.h"
-
+#include "USB_UART.h"
 
 //#define ANGLE_THRESHOLD 20
 
@@ -38,7 +38,7 @@ uint8 rf_start;
 
 
 struct State;
-typedef void state_logic(struct State*,motion_type current_motion);
+typedef void state_logic(struct State*,motion_type current_motion,data_main *rf_data);
 
 struct State{
     state_logic* next_state;
@@ -46,7 +46,7 @@ struct State{
    	update_states fsm_state;
    	int16_t *route;
    	int16_t steps;
-   	data_main *rf_data;
+   	// data_main *rf_data;
 };
 
 //state_logic unknown, straight, front_out, turn_left, turn_right;
@@ -56,10 +56,10 @@ void init_FSM();
 void FSM();
 
 //void start(struct State* state);
-void unknown(struct State* state,motion_type current_motion);
-void calculate(struct State* state,motion_type current_motion);
-void execute(struct State* state,motion_type current_motion);
-void update(struct State* state,motion_type current_motion);
+void unknown(struct State* state,motion_type current_motion,data_main *rf_data);
+void calculate(struct State* state,motion_type current_motion,data_main *rf_data);
+void execute(struct State* state,motion_type current_motion,data_main *rf_data);
+void update(struct State* state,motion_type current_motion,data_main *rf_data);
 uint8 get_pid_start();
 void set_pid_start(uint8 start);
 

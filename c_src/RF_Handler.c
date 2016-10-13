@@ -57,25 +57,12 @@ CY_ISR(rxISR){
 data_main* rf_Handler_init(){
     UART_Start();
     isrRF_RX_StartEx(rxISR);
+    clear_handled();
     data_main* out = calloc(1,sizeof(data_main));
     return out;
 }
 
-straight_line_data* init_straight_line_data(uint16 distance,uint16 angle){
-    straight_line_data* ret = calloc(1,sizeof(straight_line_data));
-    //ret->distance_px = (uint16)(distance/100.0 * M_TO_PX_RATIO);
-    ret->init_angle = angle;
-    return ret;
-}
 
-void init_line_pos(straight_line_data* line_data_ptr,uint16 x, uint16 y,uint16 angle){
-    line_data_ptr->init_x = x;
-    line_data_ptr->init_y = y;
-    line_data_ptr->init_angle = angle;
-    init_x = x;
-    init_y = y;
-    init_angle = angle;
-}
 
 
 // decode the input string and allocate values into struct members
@@ -234,71 +221,5 @@ uint8 is_handled(){
 
 void clear_handled(){
     rx_handled = 0;
-}
-
-
-//angle in rad
-//distance is in px
-uint16 get_target_x(uint16 init_X,uint16 distance,float angle){
-    float dx;
-    dx = cos(angle) * distance;
-    return init_X + dx;
-}
-
-//angle in rad
-//distance is in px
-uint16 get_target_y(uint16 init_Y,uint16 distance,float angle){
-    float dy;
-    dy = sin(angle) * distance;
-    return init_Y - dy;
-}
-
-//return 0 if on-line
-//1 if needs to adjust right (on the left)
-//2 if needs to adjust left (on the right)
-uint8 check_current_x(straight_line_data* line_data_ptr,uint16 current_x,uint16 current_y){
-    line_data_ptr->current_x = current_x;
-    line_data_ptr->current_y = current_y;
-    uint16 current_k;
-    current_k = tan(line_data_ptr->init_angle) * line_data_ptr->current_x + line_data_ptr->init_y;
-    if(current_y > current_k){
-        return 1;
-    }
-    else if(current_y < current_k){
-        return 2;
-    }
-
-    return 0;
-}
-//return 0 if on-line
-//1 if needs to adjust right (on the left)
-//2 if needs to adjust left (on the right)
-uint8 check_current_y(data_main* data_main_ptr,straight_line_data* straight_line_data_ptr){
-    uint16 current_y_pos = data_main_ptr->robot_ypos;
-    uint16 current_angle_deg = data_main_ptr->robot_orientation;
-    uint16 init_y = straight_line_data_ptr->init_y;
-    uint16 init_angle = straight_line_data_ptr->init_angle;
-    if(current_y_pos >= (init_y - Y_THRESHOLD) && current_y_pos <= (init_y + Y_THRESHOLD)){
-        if(current_angle_deg <= (init_angle + ANGLE_THRESHOLD) && current_angle_deg >= (init_angle - ANGLE_THRESHOLD)){
-            return NOT_ADJUSTING;
-        }
-        else if(current_angle_deg > init_angle){
-            return ADJUST_RIGHT;
-        }
-        else if(current_angle_deg < init_angle){
-            return ADJUST_LEFT;
-        }
-    }
-    else if(current_y_pos > (init_y + Y_THRESHOLD)){
-        return ADJUST_RIGHT;
-    }
-    else if(current_y_pos < (init_y - Y_THRESHOLD)){
-        return ADJUST_LEFT;
-    }
-    return 0;
-}
-
-inline float deg_to_rad(float deg){
-    return deg * M_PI / 1800.0;
 }
 /* [] END OF FILE */

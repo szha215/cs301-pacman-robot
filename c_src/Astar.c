@@ -24,13 +24,13 @@ int16_t astar(int16_t *map, int16_t width, int16_t height, int16_t *route, int16
 		return -1;
 	} else if (start > MAP_WIDTH*MAP_HEIGHT || start < 0){
 		printf("INVALID START\n");
-		return -1;
+		return -2;
 	} else if (*(map + destination) == 1){
 		printf("INVALID DESTINATION\n");
-		return -1;
+		return -3;
 	} else if (*(map + start) == 1){
 		printf("INVALID START\n");
-		return -1;
+		return -4;
 	}
 
 
