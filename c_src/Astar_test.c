@@ -59,10 +59,10 @@ int main(void){
 		printf("\n");
 	}
 
-	int16_t x = 164;
-	int16_t y = 269;
+	int16_t x = 76;
+	int16_t y = 253;
 
-	decision_type decision = next_turn(route, steps, x, y, 50);
+	decision_type decision = next_turn(route, steps, x, y, 2700);
 
 	if (decision == STRAIGHT){
 		printf("decision = STRAIGHT\n");
@@ -78,6 +78,10 @@ int main(void){
 
 	if (decision == TURN_AROUND){
 		printf("decision = TURN_AROUND\n");
+	}
+
+	if (decision == OUT_OF_BOUNDS){
+		printf("decision = OUT_OF_BOUNDS\n");
 	}
 
 	printf("ENUM SIZE = %i\n", sizeof(astar_status));
