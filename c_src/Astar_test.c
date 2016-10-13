@@ -59,8 +59,8 @@ int main(void){
 		printf("\n");
 	}
 
-	int16_t x = 167;
-	int16_t y = 378;
+	int16_t x = 164;
+	int16_t y = 269;
 
 	decision_type decision = next_turn(route, steps, x, y, 50);
 

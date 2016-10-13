@@ -36,6 +36,9 @@ decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int
 	int16_t i, rel_direction, current_direction;	//next direction => 0=north, 1=south, 2=east, 3=west
 	uint8_t in_bound = 0;
 
+	printf("next_turn: current before = %i\n", current);
+
+
 	for (i = 0; i < steps; i++){
 		if (*(route + i) == current){
 			current = i;
@@ -48,7 +51,7 @@ decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int
 		return OUT_OF_BOUNDS;
 	}
 
-	printf("current y = %i\n", *(route + current)/MAP_WIDTH);
+	printf("next_turn: current after = %i\n", current);
 	printf("next y = %i\n", *(route + current + 1)/MAP_WIDTH);
 
 	if (*(route + current + 1)/MAP_WIDTH < *(route + current)/MAP_WIDTH){	//North
@@ -71,9 +74,9 @@ decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int
 
 	if (current_direction == rel_direction){
 		return STRAIGHT;
-	} else if (current_direction > rel_direction){
+	} else if (current_direction >= rel_direction){
 		return TURN_RIGHT;
-	} else if (current_direction < rel_direction){
+	} else if (current_direction <= rel_direction){
 		return TURN_LEFT;
 	} else {
 		return TURN_AROUND;
@@ -86,19 +89,15 @@ int16_t conv_location(int16_t x, int16_t y){
 	float y_f = (float)y/MAP_HEIGHT_PIXEL * MAP_HEIGHT;
 
 
-printf("conv_location = %i\n", ((int16_t)y_f) * MAP_WIDTH + ((int16_t)x_f%MAP_WIDTH));
+	printf("conv_location = %i, %i\n", ((int16_t)y_f)%MAP_WIDTH, ((int16_t)x_f));
 
 
 
-	return ((int16_t)y_f) * MAP_WIDTH + ((int16_t)x_f%MAP_WIDTH);
+	return ((int16_t)y_f) * MAP_WIDTH + ((int16_t)x_f);
 }
 
 void clear_route(int16_t *route, int16_t steps){
-	int16_t i;
-
-	for (i = 0; i < steps; i++){
-		*(route + i) = 0;
-	}
+	memset(route, 0, steps * sizeof(int16_t));
 }
 
 int8_t are_we_there_yet(int16_t current_x, int16_t current_y, int16_t dest_x, int16_t dest_y){

@@ -14,7 +14,6 @@
 
 int16_t astar(int *map, int16_t width, int16_t height, int16_t *route, int16_t start, int16_t destination){
 	int16_t *open, *closed, *parent, *g_cost, *traced_route;
-	int16_t o_count, c_count, p_count;
 	int16_t current;
 	uint16_t i, j, steps;
 
@@ -22,16 +21,16 @@ int16_t astar(int *map, int16_t width, int16_t height, int16_t *route, int16_t s
 
 	if (destination > MAP_WIDTH*MAP_HEIGHT || destination < 0){
 		printf("INVALID DESTINATION\n");
-		return 0;
+		return -1;
 	} else if (start > MAP_WIDTH*MAP_HEIGHT || start < 0){
 		printf("INVALID START\n");
-		return 0;
+		return -1;
 	} else if (*(map + destination) == 1){
 		printf("INVALID DESTINATION\n");
-		return 0;
+		return -1;
 	} else if (*(map + start) == 1){
 		printf("INVALID START\n");
-		return 0;
+		return -1;
 	}
 
 
@@ -68,7 +67,6 @@ int16_t astar(int *map, int16_t width, int16_t height, int16_t *route, int16_t s
 	*/
 
 	*(open + start) = 1;
-	o_count++;
 	*(g_cost + start) = 0;
 
 	j = 0;
