@@ -250,7 +250,7 @@ void motion_stop_buffer(struct motion_state* m_state,decision_type decision, upd
             m_state->next_state = motion_straight;
         }
         else if(decision == OUT_OF_BOUNDS){
-            //LED_Write(1);
+            // LED_Write(1);
 
         }
     }

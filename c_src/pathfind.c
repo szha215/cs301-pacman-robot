@@ -12,16 +12,16 @@
 
 #include "pathfind.h"
 
-int16_t find_path(uint8_t level, int *map, int16_t *route, int16_t start_x, int16_t start_y, int16_t dest_x, int16_t dest_y){
+int16_t find_path(uint8_t level, int16_t *map, int16_t *route, int16_t start_x, int16_t start_y, int16_t dest_x, int16_t dest_y){
 
 	int16_t start = conv_location(start_x, start_y);
 	int16_t destination = conv_location(dest_x, dest_y);
 
-	printf("FIND_PATH START = %i\n", start);
-	printf("FIND_PATH DEST  = %i\n", destination);
-
+	// printf("FIND_PATH START = %i\n", start);
+	// printf("FIND_PATH DEST  = %i\n", destination);
+	
 	if (level == 1){
-		return dfs_traverse(route, start);
+		//return dfs_traverse(route, start);
 	} else if (level == 2){
 		return astar(map, MAP_WIDTH, MAP_HEIGHT, route, start, destination);
 	} else if (level == 3){
@@ -36,7 +36,7 @@ decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int
 	int16_t i, rel_direction, current_direction;	//next direction => 0=north, 1=south, 2=east, 3=west
 	uint8_t in_bound = 0;
 
-	printf("next_turn: current before = %i\n", current);
+	// printf("next_turn: current before = %i\n", current);
 
 
 	for (i = 0; i < steps; i++){
@@ -51,8 +51,8 @@ decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int
 		return OUT_OF_BOUNDS;
 	}
 
-	printf("next_turn: current after = %i\n", current);
-	printf("next y = %i\n", *(route + current + 1)/MAP_WIDTH);
+	// printf("next_turn: current after = %i\n", current);
+	// printf("next y = %i\n", *(route + current + 1)/MAP_WIDTH);
 
 	if (*(route + current + 1)/MAP_WIDTH < *(route + current)/MAP_WIDTH){	//North
 		rel_direction = 90;
@@ -63,15 +63,15 @@ decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int
 	}else if (*(route + current + 1)%MAP_WIDTH < *(route + current)%MAP_WIDTH){	//West
 		rel_direction = 180;
 	} else {
-		printf("wrong rel_direction\n");
+		// printf("wrong rel_direction\n");
 	}
-	printf("INPUT ANGLE = %i\n", angle);
-	printf("RELATIVE ANGLE = %i\n", rel_direction);
+	// printf("INPUT ANGLE = %i\n", angle);
+	// printf("RELATIVE ANGLE = %i\n", rel_direction);
 
 	current_direction = round_angle(angle/10);
 
-	printf("CURRENT ANGLE = %i\n", current_direction);
-	printf("REL_ANGLE = %i\n", rel_direction);
+	// printf("CURRENT ANGLE = %i\n", current_direction);
+	// printf("REL_ANGLE = %i\n", rel_direction);
 
 	if(abs(current_direction - rel_direction) == 180){
 		return TURN_AROUND;
@@ -94,7 +94,7 @@ int16_t conv_location(int16_t x, int16_t y){
 	float y_f = (float)y/MAP_HEIGHT_PIXEL * MAP_HEIGHT;
 
 
-	printf("conv_location = %i, %i\n", ((int16_t)y_f)%MAP_WIDTH, ((int16_t)x_f));
+	// printf("conv_location = %i, %i\n", ((int16_t)y_f)%MAP_WIDTH, ((int16_t)x_f));
 
 
 
