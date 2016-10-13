@@ -21,7 +21,7 @@ int16_t find_path(uint8_t level, int *map, int16_t *route, int16_t start_x, int1
 	printf("FIND_PATH DEST  = %i\n", destination);
 
 	if (level == 1){
-
+		return dfs_traverse(route, start);
 	} else if (level == 2){
 		return astar(map, MAP_WIDTH, MAP_HEIGHT, route, start, destination);
 	} else if (level == 3){

@@ -15,7 +15,8 @@
 #include "Astar.h"
 #include "pathfind.h"
 #include "map.h"
-#include "defines.h" 
+#include "defines.h"
+#include "dfs_traverse.h"
 
 int in_sett(int16_t *route, int steps, int node){
 	int i;
@@ -33,18 +34,18 @@ int main(void){
 	int* mapp;
 	int16_t* route;
 	int i,j;
-	uint8_t steps = 0;
+	uint16_t steps = 0;
 	printf("\n================================================= start\n\n");
 
 	route = (int16_t*)malloc(MAP_WIDTH * MAP_HEIGHT * sizeof(short));
 
 	//steps = astar(map, MAP_WIDTH, MAP_HEIGHT, route, 1*MAP_WIDTH+1, 13*MAP_WIDTH+17);
-	steps = find_path(2, map, route, 63, 380, 55, 155);
+	steps = find_path(1, map, route, 63, 380, 55, 155);
 	//free(a);
 
 	printf("\n======================== ASTAR end\n");
 
-	printf("TOTAL STEPS = %i\n", steps);
+	printf("TOTAL STEPS = %d\n", steps);
 
 	for (i = 0; i < 15; i++){
 		for (j = 0; j < 19; j++){
