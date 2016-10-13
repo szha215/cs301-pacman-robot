@@ -12,7 +12,7 @@
 
 #include "Astar.h"
 
-int16_t astar(int *map, int16_t width, int16_t height, int16_t *route, int16_t start, int16_t destination){
+int16_t astar(int16_t *map, int16_t width, int16_t height, int16_t *route, int16_t start, int16_t destination){
 	int16_t *open, *closed, *parent, *g_cost, *traced_route;
 	int16_t current;
 	uint16_t i, j, steps;
@@ -190,7 +190,7 @@ static void add_closed(int16_t *closed, int16_t location){
 	*(closed + location) = 1;
 }
 
-static uint8_t add_open(int *map, int16_t *open, int16_t *closed, int16_t *g_cost, int16_t *parent, int16_t current){
+static uint8_t add_open(int16_t *map, int16_t *open, int16_t *closed, int16_t *g_cost, int16_t *parent, int16_t current){
 	int16_t i;
 	int16_t o_count = 0, temp = 0;
 	int16_t g;
