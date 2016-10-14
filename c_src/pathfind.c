@@ -17,8 +17,8 @@ int16_t find_path(uint8_t level, int16_t *map, int16_t *route, int16_t start_x, 
 	int16_t start = conv_location(start_x, start_y);
 	int16_t destination = conv_location(dest_x, dest_y);
 
-	// printf("FIND_PATH START = %i\n", start);
-	// printf("FIND_PATH DEST  = %i\n", destination);
+	printf("FIND_PATH START = %i\n", start);
+	printf("FIND_PATH DEST  = %i\n", destination);
 	
 	if (level == 1){
 		//return dfs_traverse(route, start);
@@ -36,7 +36,7 @@ decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int
 	int16_t i, rel_direction, current_direction;	//next direction => 0=north, 1=south, 2=east, 3=west
 	uint8_t in_bound = 0;
 
-	// printf("next_turn: current before = %i\n", current);
+	printf("next_turn: current before = %i\n", current);
 
 
 	for (i = 0; i < steps; i++){
@@ -51,7 +51,7 @@ decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int
 		return OUT_OF_BOUNDS;
 	}
 
-	// printf("next_turn: current after = %i\n", current);
+	printf("next_turn: current after = %i\n", current);
 	// printf("next y = %i\n", *(route + current + 1)/MAP_WIDTH);
 
 	if (*(route + current + 1)/MAP_WIDTH < *(route + current)/MAP_WIDTH){	//North
@@ -70,8 +70,8 @@ decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int
 
 	current_direction = round_angle(angle/10);
 
-	// printf("CURRENT ANGLE = %i\n", current_direction);
-	// printf("REL_ANGLE = %i\n", rel_direction);
+	printf("CURRENT ANGLE = %i\n", current_direction);
+	printf("REL_ANGLE = %i\n", rel_direction);
 
 	if(abs(current_direction - rel_direction) == 180){
 		return TURN_AROUND;

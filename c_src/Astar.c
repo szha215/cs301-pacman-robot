@@ -11,7 +11,7 @@
 */
 
 #include "Astar.h"
-#include "project.h"
+//#include "project.h"
 int16_t astar(int16_t *map, int16_t width, int16_t height, int16_t *route, int16_t start, int16_t destination){
 	int16_t *open, *closed, *parent, *g_cost, *traced_route;
 	int16_t current;
