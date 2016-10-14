@@ -12,24 +12,43 @@
 
 #include "Astar.h"
 #include "project.h"
-int16_t astar(int16_t *map, int16_t width, int16_t height, int16_t *route, int16_t start, int16_t destination){
+
+
+static void init_astar(int16_t *open, int16_t *closed, int16_t *parent, int16_t *g_cost, int16_t size);
+
+static uint8_t is_empty(int16_t *list, int16_t size);
+
+static int16_t next_current(int16_t *open, int16_t *g_cost, int16_t destination, int16_t size);
+
+static void add_closed(int16_t *closed, int16_t location);
+
+static uint8_t add_open(int16_t *map, int16_t *open, int16_t *closed, int16_t *g_cost, int16_t *parent, int16_t current);
+
+static uint8_t traceback(int16_t *parent, int16_t *traceback, int16_t destination, int16_t start);
+
+static void flip_array(int16_t *source, int16_t *target, int16_t size);
+
+static int16_t manhattan(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
+
+ 
+int16_t astar(int16_t map[15][19], int16_t width, int16_t height, int16_t *route, int16_t start, int16_t destination){
 	int16_t *open, *closed, *parent, *g_cost, *traced_route;
 	int16_t current;
-	uint16_t i, j, steps;
+	uint16_t i, steps;
 
-	printf("size of map = %i\n\n", sizeof(int16_t));
+	// printf("size of map = %i\n\n", sizeof(int16_t));
 
 	if (destination > MAP_WIDTH*MAP_HEIGHT || destination < 0){
-		printf("INVALID DESTINATION\n");
+		// printf("INVALID DESTINATION\n");
 		return -1;
 	} else if (start > MAP_WIDTH*MAP_HEIGHT || start < 0){
-		printf("INVALID START\n");
+		// printf("INVALID START\n");
 		return -2;
-	} else if (*(map + destination) == 1){
-		printf("INVALID DESTINATION\n");
+	} else if (*(&map + destination) == 1){
+		// printf("INVALID DESTINATION\n");
 		return -3;
 	} else if (*(map + start) == 1){
-		printf("INVALID START\n");
+		// printf("INVALID START\n");
 		return -4;
 	}
 
@@ -38,18 +57,20 @@ int16_t astar(int16_t *map, int16_t width, int16_t height, int16_t *route, int16
 	closed = (int16_t*)malloc(285 * sizeof(int16_t));
 	parent = (int16_t*)malloc(285 * sizeof(int16_t));
 	g_cost = (int16_t*)malloc(285 * sizeof(int16_t));
-	traced_route = (int16_t*)malloc(200 * sizeof(int16_t));
+	traced_route = (int16_t*)malloc(285 * sizeof(int16_t));
+
+
 
 	init_astar(open, closed, parent, g_cost, 285);
 
-	printf("========MAP========\n\n");
-	for (i = 0; i < 15; i++){
-		for (j = 0; j < 19; j++){
-			printf("%c", *(map + i*19 + j) == 0? ' ':'#');
-		}
-		printf("\n");
-	}
-	printf("\n===================\n\n");
+	// printf("========MAP========\n\n");
+	// for (i = 0; i < 15; i++){
+		// for (j = 0; j < 19; j++){
+			// printf("%c", *(map + i*19 + j) == 0? ' ':'#');
+		// }
+		// printf("\n");
+	// }
+	// printf("\n===================\n\n");
 
 
 	/* Each iteration should contain:
@@ -69,42 +90,40 @@ int16_t astar(int16_t *map, int16_t width, int16_t height, int16_t *route, int16
 	*(open + start) = 1;
 	*(g_cost + start) = 0;
 
-	j = 0;
-
 	while (!is_empty(open, 285)){
 		current = next_current(open, g_cost, destination, 285);
-		printf("current = %i, %i\n", current%19, current/19);
+		// printf("current = %i, %i\n", current%19, current/19);
 		add_closed(closed, current);
-		printf("%i\n", add_open(map, open, closed, g_cost, parent, current));
+		// printf("%i\n", add_open(map, open, closed, g_cost, parent, current));
 
-		j++;
 
 		if (current == destination){
-			// LED_Write(1);
-			printf("DESTINATION REACHED\n");
+			//LED_Write(0);
+			 LED_Write(1);
+			// printf("DESTINATION REACHED\n");
 			break;
 		}
 		
 	}
 
 	steps = traceback(parent, traced_route, destination, start);
-	
 
-	printf("STEPS = %i\n", steps);
+
+	// printf("STEPS = %i\n", steps);
 	
 	for (i = 0; i < steps; i++){
-		printf("traced_route[%i] = %i (%i, %i)\n", i, *(traced_route+i), *(traced_route+i)%MAP_WIDTH, *(traced_route+i)/MAP_WIDTH);
+		// printf("traced_route[%i] = %i (%i, %i)\n", i, *(traced_route+i), *(traced_route+i)%MAP_WIDTH, *(traced_route+i)/MAP_WIDTH);
 	}
 	
 	flip_array(traced_route, route, steps);
 
 	for (i = 0; i < steps; i++){
-		printf("route[%i] = %i (%i, %i)\n", i, *(route+i),*(route+i)%MAP_WIDTH, *(route+i)/MAP_WIDTH);
+		// printf("route[%i] = %i (%i, %i)\n", i, *(route+i),*(route+i)%MAP_WIDTH, *(route+i)/MAP_WIDTH);
 	}
 
-	//printf("closed [start] = %i\n", *(closed+start));
+	// printf("closed [start] = %i\n", *(closed+start));
 
-	//printf("%i\n", add_open(map, open, closed, parent, current));
+	// printf("%i\n", add_open(map, open, closed, parent, current));
 
 
 	free(parent);
@@ -136,7 +155,7 @@ static int16_t next_current(int16_t *open, int16_t *g_cost, int16_t destination,
 	int16_t next_manhattan = 0;
 	int16_t i;
 
-	//printf("int16_t MAX = %i\n", f_cost_min);
+	// printf("int16_t MAX = %i\n", f_cost_min);
 
 	for (i = 0; i < size; i++){
 		if (*(open + i) == 1){
@@ -206,7 +225,7 @@ static uint8_t add_open(int16_t *map, int16_t *open, int16_t *closed, int16_t *g
 		*(g_cost + temp) = *(g_cost + current) + 1;
 		o_count++;
 
-		printf("open North added at %i, %i\n", temp%19, temp/19);
+		// printf("open North added at %i, %i\n", temp%19, temp/19);
 	}
 
 	// South
@@ -218,7 +237,7 @@ static uint8_t add_open(int16_t *map, int16_t *open, int16_t *closed, int16_t *g
 		*(g_cost + temp) = *(g_cost + current) + 1;
 		o_count++;
 
-		printf("open South added at %i, %i\n", temp%19, temp/19);
+		// printf("open South added at %i, %i\n", temp%19, temp/19);
 	}
 
 	// West
@@ -230,7 +249,7 @@ static uint8_t add_open(int16_t *map, int16_t *open, int16_t *closed, int16_t *g
 		*(g_cost + temp) = *(g_cost + current) + 1;
 		o_count++;
 
-		printf("open West added at %i, %i\n", temp%19, temp/19);
+		// printf("open West added at %i, %i\n", temp%19, temp/19);
 	}
 
 	// East
@@ -242,7 +261,7 @@ static uint8_t add_open(int16_t *map, int16_t *open, int16_t *closed, int16_t *g
 		*(g_cost + temp) = *(g_cost + current) + 1;
 		o_count++;
 
-		printf("open East added at %i, %i\n", temp%19, temp/19);
+		// printf("open East added at %i, %i\n", temp%19, temp/19);
 	}
 
 	return o_count;

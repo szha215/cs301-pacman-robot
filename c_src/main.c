@@ -138,13 +138,13 @@ int main()
     
     USBUART_Start(0,USBUART_5V_OPERATION);
     data_main* RF_data;
-    RF_data = rf_Handler_init();
+    //RF_data = rf_Handler_init();
 
     // for(;;){}
 
     if(dip_val == 1){
         CyDelay(1000);
-        FSM(RF_data);
+        FSM();
     }
 
     

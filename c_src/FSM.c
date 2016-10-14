@@ -12,7 +12,8 @@
 
 #include "FSM.h"
 
-
+static int16_t route[285];
+static int16_t steps;
 
 
 void init_FSM(){
@@ -22,14 +23,16 @@ void init_FSM(){
 
 
 
-void FSM(data_main* rf_data){
+void FSM(){
     struct State CS;
     struct motion_state motion_CS;
     motion_CS.next_state = motion_stop;
     CS.next_state = calculate;
     init_FSM();
     CS.count = 0;
-    
+    CS.step_counter = 0;
+    data_main* rf_data;
+    rf_data = rf_Handler_init();
     //TODO:
     //Initialize all the motion and decision states 
     CS.current_decision = STOP;
@@ -59,25 +62,28 @@ void calculate(struct State* state,motion_type current_motion,data_main *rf_data
     // state->rf_data = rf_Handler_init();
     // data_main* temp_rf_data;
     // temp_rf_data = state->rf_data;
-    int i;
-    for(i = 0; i < 3; i++){
-        while(!is_handled()){check_RF(rf_data);}
-        clear_handled();    
-    }
-    clear_route(route,284);
+    // int i;
+    // for(i = 0; i < 5; i++){
+    //     CyDelay(100);
+    //     while(!is_handled()){check_RF(rf_data);}
+    //     clear_handled();    
+    // }
+    clear_route(route,285);
 
-    // int16_t x, y, angl;
+     int16_t x, y, angl;
 
-    // if (state->count == 0){
-    //     x = 63;
-    //     y = 361;
-    //     angl = 0;
-    //     state->count = state->count + 1;
-    // } 
+    if (state->count == 0){
+        x = 63;
+        y = 361;
+        angl = 0;
+        state->count = state->count + 1;
+    } 
 
 
-   state->steps = find_path(2,map,route,rf_data->robot_xpos,rf_data->robot_ypos,55,155);
-    // steps = find_path(2,map,route, x, y, 55,155);
+    //state->steps = find_path(2,map,route,x,y,55,155);
+    
+    steps = find_path(1,map,route, x, y, 1,3);
+
     // state->steps = find_path(2,*map,state->route,63,380,food_packets[0][0],food_packets[0][1]);
     state->current_decision = STRAIGHT;
     state->next_state = execute;
@@ -118,7 +124,8 @@ void update(struct State* state,motion_type current_motion,data_main *rf_data){
     //update next instruction
     decision_type next_decision;
     int i;
-    for(i = 0; i < 3; i++){
+    for(i = 0; i < 5; i++){
+        CyDelay(100);
         while(!is_handled()){check_RF(rf_data);}
         clear_handled();    
     }
@@ -129,7 +136,8 @@ void update(struct State* state,motion_type current_motion,data_main *rf_data){
     //     angl = 0;
         
     //     state->count = state->count +1;
-    // } else if (state->count == 2){
+    // } 
+    // else if (state->count == 2){
     //     x = 173;
     //     y = 260;
     //     angl = 900;
@@ -139,13 +147,11 @@ void update(struct State* state,motion_type current_motion,data_main *rf_data){
     //     x = 65;
     //     y = 276;
     //     angl = 1800;
-    //     LED_Write(1);
     //     state->count =  state->count +1;
     // }
-    if(rf_data->robot_xpos > 1024){
-        LED_Write(1);
-    }
-   next_decision = next_turn(route,steps,rf_data->robot_xpos,rf_data->robot_ypos,rf_data->robot_orientation);
+    
+
+   next_decision = next_turn(route,steps,rf_data->robot_xpos,rf_data->robot_ypos,rf_data->robot_orientation,&(state->step_counter));
     // next_decision = next_turn(route,steps, x, y,angl);
     // LED_Write(1);
     // for(;;){}

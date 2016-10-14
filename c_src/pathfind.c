@@ -12,26 +12,26 @@
 
 #include "pathfind.h"
 
-int16_t find_path(uint8_t level, int16_t *map, int16_t *route, int16_t start_x, int16_t start_y, int16_t dest_x, int16_t dest_y){
+int16_t find_path(uint8_t level, int16_t map[15][19], int16_t *route, int16_t start_x, int16_t start_y, int16_t dest_x, int16_t dest_y){
 
 	int16_t start = conv_location(start_x, start_y);
-	int16_t destination = conv_location(dest_x, dest_y);
+	int16_t destination = dest_y * MAP_WIDTH + dest_x;
 
 	// printf("FIND_PATH START = %i\n", start);
 	// printf("FIND_PATH DEST  = %i\n", destination);
 	
 	if (level == 1){
-		//return dfs_traverse(route, start);
+		return dfs_traverse(route, start);
 	} else if (level == 2){
 		return astar(map, MAP_WIDTH, MAP_HEIGHT, route, start, destination);
 	} else if (level == 3){
 
 	}
 
-	return -1;
+	return -5;
 }
 
-decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int16_t angle){
+decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int16_t angle, int16_t* counter){
 	int16_t current = conv_location(x, y);
 	int16_t i, rel_direction, current_direction;	//next direction => 0=north, 1=south, 2=east, 3=west
 	uint8_t in_bound = 0;
@@ -39,10 +39,11 @@ decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int
 	// printf("next_turn: current before = %i\n", current);
 
 
-	for (i = 0; i < steps; i++){
+	for (i = *counter; i < steps; i++){
 		if (*(route + i) == current){
 			current = i;
 			in_bound = 1;
+			*counter = i;
 			break;
 		}
 	}
@@ -116,7 +117,7 @@ int8_t are_we_there_yet(int16_t current_x, int16_t current_y, int16_t dest_x, in
 	return 0;
 }
 
-static int16_t round_angle(int16_t angle){
+int16_t round_angle(int16_t angle){
 	if (angle < 20 || angle > 340){
 		return 0;
 	} else if (angle < 110 && angle > 70){

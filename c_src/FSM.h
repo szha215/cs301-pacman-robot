@@ -47,15 +47,15 @@ struct State{
    	// int16_t *route;
    	int16_t steps;
    	int16_t count;
+   	int16_t step_counter;
    	// data_main *rf_data;
 };
 
 //state_logic unknown, straight, front_out, turn_left, turn_right;
 
-static int16_t route[285];
-static int16_t steps;
+
 void init_FSM();
-void FSM(data_main* rf_data);
+void FSM();
 
 //void start(struct State* state);
 void unknown(struct State* state,motion_type current_motion,data_main *rf_data);
