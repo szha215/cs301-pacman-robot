@@ -115,6 +115,11 @@ CY_ISR(isr_s_timer){
 //SENSOR ISR READINGS
 
 
+int16_t* func(void){
+    return malloc(285*5*sizeof(int16_t));
+}
+
+
 int main()
 {
 	
@@ -132,15 +137,18 @@ int main()
     dip_val = dip_read();
     
     USBUART_Start(0,USBUART_5V_OPERATION);
+    data_main* RF_data;
+    RF_data = rf_Handler_init();
+
+    // for(;;){}
+
     if(dip_val == 1){
         CyDelay(1000);
-        FSM();
+        FSM(RF_data);
     }
 
     
-    data_main* RF_data;
-    RF_data = rf_Handler_init();
- 
+   
     char tempString[BUF_SIZE];
     // Something critical happened if the program gets here
     for(;;)

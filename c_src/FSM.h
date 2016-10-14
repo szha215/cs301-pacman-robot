@@ -55,7 +55,7 @@ struct State{
 static int16_t route[285];
 static int16_t steps;
 void init_FSM();
-void FSM();
+void FSM(data_main* rf_data);
 
 //void start(struct State* state);
 void unknown(struct State* state,motion_type current_motion,data_main *rf_data);

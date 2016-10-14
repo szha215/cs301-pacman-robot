@@ -225,32 +225,45 @@ void motion_stop_buffer(struct motion_state* m_state,decision_type decision, upd
     if(fsm_state == STATE_UPDATED){
         if(decision == TURN_LEFT){
             if(s_fr == IN_LINE || s_fl == IN_LINE){
+                m_state->current_motion = TURNING_BUFFER;
                 m_state->next_state = motion_turning_buffer;
             }
             else{
+                m_state->current_motion = TURNING;
                 m_state->next_state = motion_turn_left;
             }
         }
         else if(decision == TURN_RIGHT){
             if(s_fr == IN_LINE || s_fl == IN_LINE){
+                m_state->current_motion = TURNING_BUFFER;
                 m_state->next_state = motion_turning_buffer;
             }
             else{
+                m_state->current_motion = TURNING;
                 m_state->next_state = motion_turn_right;
             }
         }
         else if(decision == STRAIGHT){
+            m_state->current_motion = GOING_STRAIGHT;
             block_intersection_sensors();
             m_state->next_state = motion_straight;
         }
         else if(decision == STOP){
+            m_state->current_motion = STOPPED;
             m_state->next_state = motion_stop;
         }
         else if(decision == TURN_AROUND){
-            m_state->next_state = motion_straight;
+            if(s_fr == IN_LINE || s_fl == IN_LINE){
+                m_state->current_motion = TURNING_BUFFER;
+                m_state->next_state = motion_turning_buffer;
+            }
+            else{
+                m_state->current_motion = TURNING;
+                m_state->next_state = motion_turn_left;
+            }
         }
         else if(decision == OUT_OF_BOUNDS){
-            // LED_Write(1);
+            LED_Write(1);
 
         }
     }
