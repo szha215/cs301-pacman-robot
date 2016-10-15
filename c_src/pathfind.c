@@ -21,7 +21,7 @@ int16_t find_path(uint8_t level, int16_t map[15][19], int16_t *route, int16_t st
 	printf("FIND_PATH DEST  = %i\n", destination);
 	
 	if (level == 1){
-		return dfs_traverse(route, start);
+		//return dfs_traverse(route, start);
 	} else if (level == 2){
 		return astar(map, MAP_WIDTH, MAP_HEIGHT, route, start, destination);
 	} else if (level == 3){
@@ -78,6 +78,8 @@ decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int
 		return TURN_AROUND;
 	} else if (current_direction == 0 && rel_direction == 270){
 		return TURN_RIGHT;
+	} else if (current_direction == 270 && rel_direction == 0){
+		return TURN_LEFT;
 	} else if (current_direction == rel_direction){
 		return STRAIGHT;
 	} else if (current_direction > rel_direction){
