@@ -24,16 +24,20 @@
 
 
 volatile uint8 turned;
+volatile uint16 timer_ovrflw; 
+volatile uint8 turn_around_flag;
+volatile uint8 side_sensor_turn_around_flag;
 
-uint8 button_flag;
+volatile uint8 button_flag;
     
+
     
-uint8 s_fl;
-uint8 s_fr;
-uint8 s_l;
-uint8 s_r;
-uint8 s_m;
-uint8 s_b;
+volatile uint8 s_fl;
+volatile uint8 s_fr;
+volatile uint8 s_l;
+volatile uint8 s_r;
+volatile uint8 s_m;
+volatile uint8 s_b;
 
 struct motion_state;
 typedef void motion_state_logic(struct motion_state*,decision_type decision, update_states fsm_state);
@@ -61,5 +65,11 @@ void motion_turn_right(struct motion_state* m_state,decision_type decision, upda
 void motion_turn_around(struct motion_state* m_state,decision_type decision, update_states fsm_state);
 void motion_turning_buffer(struct motion_state* m_state,decision_type decision, update_states fsm_state);
 void motion_stop_buffer(struct motion_state* m_state,decision_type decision, update_states fsm_state);
+void motion_straight_buffer(struct motion_state* m_state,decision_type decision, update_states fsm_state);
+
+
+
 void block_intersection_sensors();
+void block_front_sensors();
+
 #endif

@@ -31,15 +31,20 @@ int16_t find_path(uint8_t level, int16_t map[15][19], int16_t *route, int16_t st
 	return -5;
 }
 
-decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int16_t angle, int16_t* 3){
+decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int16_t angle, int16_t *counter){
 	int16_t current = conv_location(x, y);
-	int16_t i, rel_direction, current_direction;	//next direction => 0=north, 1=south, 2=east, 3=west
+	int16_t i, temp, rel_direction, current_direction;	//next direction => 0=north, 1=south, 2=east, 3=west
 	uint8_t in_bound = 0;
 
 	printf("next_turn: current before = %i\n", current);
 
+	if (counter == 0){
+		temp = 0;
+	} else {
+		temp = *counter;
+	}
 
-	for (i = *counter; i < steps; i++){
+	for (i = temp; i < steps; i++){
 		if (*(route + i) == current){
 			current = i;
 			in_bound = 1;
@@ -49,6 +54,7 @@ decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int
 	}
 
 	if (in_bound == 0){
+	
 		return OUT_OF_BOUNDS;
 	}
 
@@ -101,7 +107,7 @@ int16_t conv_location(int16_t x, int16_t y){
 
 
 
-	return ((int16_t)y_f) * MAP_WIDTH + ((int16_t)x_f);
+	return ((int16_t)((y_f)) * MAP_WIDTH + (int16_t)(x_f));
 }
 
 void clear_route(int16_t *route, int16_t steps){
@@ -110,9 +116,10 @@ void clear_route(int16_t *route, int16_t steps){
 
 int8_t are_we_there_yet(int16_t current_x, int16_t current_y, int16_t dest_x, int16_t dest_y){
 	int16_t current = conv_location(current_x, current_y);
-	int16_t destination = conv_location(dest_x, dest_y);
-
-	if (current == destination){
+	int16_t destination = dest_y * MAP_WIDTH + dest_x;
+	if (dest_x == -1){
+		return 0;
+	} else if (current == destination){
 		return 1;
 	}
 

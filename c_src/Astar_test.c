@@ -60,9 +60,10 @@ int main(void){
 		printf("\n");
 	}
 
-	int16_t x = 386;
-	int16_t y = 384;
-	int16_t angl = 0;
+
+	int16_t x = 704;
+	int16_t y = 190;
+	int16_t angl = 2700;
 	int16_t counter = 0;
 	int16_t *counter_ptr = &counter;
 

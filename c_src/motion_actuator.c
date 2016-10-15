@@ -89,7 +89,7 @@ void motion_straight(struct motion_state* m_state,decision_type decision, update
         m_state->next_state = motion_straight;
         // m_state->next_state = motion_adjust_left;
     } else if (s_m == OUT_LINE){
-        m_state->next_state = motion_stop;
+        m_state->next_state = motion_stop_buffer;
     }
 
     if(turned == 0){
@@ -263,7 +263,7 @@ void motion_stop_buffer(struct motion_state* m_state,decision_type decision, upd
             }
         }
         else if(decision == OUT_OF_BOUNDS){
-            LED_Write(1);
+            LED_Write(~LED_Read());
 
         }
     }
