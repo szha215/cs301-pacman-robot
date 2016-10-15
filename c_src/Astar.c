@@ -95,12 +95,10 @@ int16_t astar(int16_t map[15][19], int16_t width, int16_t height, int16_t *route
 		current = next_current(open, g_cost, destination, 285);
 		// printf("current = %i, %i\n", current%19, current/19);
 		add_closed(closed, current);
-		// printf("%i\n", add_open(map, open, closed, g_cost, parent, current));
+		add_open(map, open, closed, g_cost, parent, current);
 
 
 		if (current == destination){
-			//LED_Write(0);
-			 LED_Write(1);
 			// printf("DESTINATION REACHED\n");
 			break;
 		}

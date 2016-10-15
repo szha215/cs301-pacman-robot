@@ -36,7 +36,6 @@ uint8 pid_start;
 uint8 rf_start;
 
 
-
 struct State;
 typedef void state_logic(struct State*,motion_type current_motion,data_main *rf_data);
 
@@ -48,6 +47,7 @@ struct State{
    	int16_t steps;
    	int16_t count;
    	int16_t step_counter;
+   	uint8 food_index;
    	// data_main *rf_data;
 };
 
@@ -62,6 +62,8 @@ void unknown(struct State* state,motion_type current_motion,data_main *rf_data);
 void calculate(struct State* state,motion_type current_motion,data_main *rf_data);
 void execute(struct State* state,motion_type current_motion,data_main *rf_data);
 void update(struct State* state,motion_type current_motion,data_main *rf_data);
+void recalculate(struct State* state,motion_type current_motion,data_main *rf_data);
+
 uint8 get_pid_start();
 void set_pid_start(uint8 start);
 

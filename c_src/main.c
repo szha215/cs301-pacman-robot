@@ -49,20 +49,13 @@ uint8 timer_50ms_counts= 0;
 //DIP readings
 uint8 dip_read();
 
-//-------------
-//Sensor vars
-uint8 s_fl = 0;
-uint8 s_fr = 0;
-uint8 s_l = 0;
-uint8 s_r = 0;
-uint8 s_m = 0;
-uint8 s_b = 0;
+
 
 
 
 int i = 0;
 uint8 int_en = 0;
-uint8 button_flag = 0;
+
 //-------------
 //PWM varss
 pid_params* pid_controller_m1;
