@@ -13,7 +13,7 @@ int16_t dfs_traverse(int16_t *path, int16_t start){
 }
 
 
-void addPath(int16_t *path){
+static void addPath(int16_t *path){
 	if (food_count() == 0){return;}
 	printf("%d >> dXdY:(%d,%d) food:%d\n", path_i, dX, dY, food_count());
 	path[path_i] = convDigi(dY,dX); // add to list
@@ -21,7 +21,7 @@ void addPath(int16_t *path){
 	path_i++;
 }
 
-void recurse_dfs(int16_t* path){
+static void recurse_dfs(int16_t* path){
 	int16_t tX = dX;
 	int16_t tY = dY;
 
@@ -65,7 +65,7 @@ void recurse_dfs(int16_t* path){
 	}
 }
 
-int16_t food_count(){
+static int16_t food_count(){
 	int16_t cnt = 0, i, j;
 	for (i = 0; i < MAP_HEIGHT; i++){ // y
 		for (j = 0; j < MAP_WIDTH; j++){ // x
@@ -77,6 +77,6 @@ int16_t food_count(){
 	return cnt;
 }
 
-int16_t convDigi(int16_t y, int16_t x){
+static int16_t convDigi(int16_t y, int16_t x){
 	return y * MAP_WIDTH + x;
 }
