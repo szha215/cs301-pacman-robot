@@ -21,7 +21,7 @@ int16_t find_path(uint8_t level, int16_t map[15][19], int16_t *route, int16_t st
 	printf("FIND_PATH DEST  = %i\n", destination);
 	
 	if (level == 1){
-		return dfs_traverse(route, start);
+		//return dfs_traverse(route, start);
 	} else if (level == 2){
 		return astar(map, MAP_WIDTH, MAP_HEIGHT, route, start, destination);
 	} else if (level == 3){
@@ -31,7 +31,7 @@ int16_t find_path(uint8_t level, int16_t map[15][19], int16_t *route, int16_t st
 	return -5;
 }
 
-decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int16_t angle, int16_t* counter){
+decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int16_t angle, int16_t* 3){
 	int16_t current = conv_location(x, y);
 	int16_t i, rel_direction, current_direction;	//next direction => 0=north, 1=south, 2=east, 3=west
 	uint8_t in_bound = 0;
@@ -78,6 +78,8 @@ decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int
 		return TURN_AROUND;
 	} else if (current_direction == 0 && rel_direction == 270){
 		return TURN_RIGHT;
+	} else if (current_direction == 270 && rel_direction == 0){
+		return TURN_LEFT;
 	} else if (current_direction == rel_direction){
 		return STRAIGHT;
 	} else if (current_direction > rel_direction){
@@ -130,7 +132,22 @@ int16_t round_angle(int16_t angle){
 }
 
 
+/*
+hello i am zambo. i am a big boy from auckland in new zealand. i like grapefruits and silly things. the quick brown fox jumps over the lazy dog. lorem ipsum dolor sit amet.
+in west philadelphia born and raised, in the playground was where i spent most of my days. chilling out maxing and relaxing
+all cool and shooting some b ball after school. when a couple of guys who were up to no good, started
+making trouble in my neighbourhood. i got in one little fight and my momma got scared and she said "you're going to 
+live with your auntie and uncle in bel air"
 
+the rusted chains of prison moons are shattered by the sun. i walk the road, horizons change, the
+tournaments begun. the purple piper plays his tune, the choir softly sings, three lullabies
+in an ancient tongue for the court of the crimson king.
+
+a star kinda works?  can make it work individually. the thing with turn around, you can make it 
+blocking. it IS blocking. cydelay. not that much blocking. ARM. Thumb. Pinky. the thumb instruction set.
+what does it even do? you should read the ARM arm. what does arm even stand for? the other arm.
+architecture reference manual. keep thinking wher
+*/
 
 
 

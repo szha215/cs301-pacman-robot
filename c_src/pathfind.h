@@ -20,7 +20,7 @@
 #include <stdint.h>
 #include <string.h>
 //#include "project.h"
-#include "Astar.h"
+#include "a_star.h"
 #include "dfs_traverse.h"
 #include "defines.h"
 

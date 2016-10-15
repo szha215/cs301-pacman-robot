@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#include "math.h"
+#include "map.h"
 
 #define MAP_WIDTH 19
 #define MAP_HEIGHT 15
@@ -30,7 +30,7 @@
 #define OPEN 1
 #define CLOSED 2
 
-
+int16_t a_star(int16_t *route, int16_t start, int16_t destination);
 
 
 
