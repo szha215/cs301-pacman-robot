@@ -64,7 +64,7 @@ CY_ISR(timer_isr){
     }
     
 
-    if(timer_ovrflw > 8){
+    if(timer_ovrflw > 7){
         turned = 0;
     }
 
@@ -323,7 +323,7 @@ void motion_stop_buffer(struct motion_state* m_state,decision_type decision, upd
             m_state->next_state = motion_turn_around;
         }
         else if(decision == OUT_OF_BOUNDS){
-            LED_Write(1);
+            //LED_Write(1);
 
         }
     }

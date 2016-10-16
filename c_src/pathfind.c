@@ -11,6 +11,7 @@
 */
 
 #include "pathfind.h"
+//#include "simulation.h"
 
 int16_t find_path(uint8_t level, int16_t map[15][19], int16_t *route, int16_t start_x, int16_t start_y, int16_t dest_x, int16_t dest_y){
 
@@ -52,7 +53,7 @@ decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int
 			break;
 		}
 	}
-printf("TEST\n");
+
 	if (in_bound == 0){
 	
 		return OUT_OF_BOUNDS;
@@ -98,46 +99,6 @@ printf("TEST\n");
 
 }
 
-int16_t turn_around(int16_t *route, int16_t steps, int16_t x, int16_t y, int16_t angle, int16_t *counter){
-	int16_t current = conv_location(x, y);
-	int16_t i, temp, rel_direction, current_direction;	//next direction => 0=north, 1=south, 2=east, 3=west
-
-	printf("next_turn: current before = %i (%i, %i)\n", current, current%MAP_WIDTH, current/MAP_WIDTH);
-
-	if (counter == 0){
-		temp = 0;
-	} else {
-		temp = *counter;
-	}
-
-	for (i = temp; i < steps; i++){
-		if (*(route + i) == current){
-			current = i;
-			break;
-		}
-	}
-
-	//printf("next_turn: current after = %i (%i, %i)\n", current, current%MAP_WIDTH, current/MAP_WIDTH);
-	// printf("next y = %i\n", *(route + current + 1)/MAP_WIDTH);
-
-	if (*(route + current + 1)/MAP_WIDTH < *(route + current)/MAP_WIDTH){	//North
-		rel_direction = 90;
-	}else if (*(route + current + 1)/MAP_WIDTH > *(route + current)/MAP_WIDTH){	//South
-		rel_direction = 270;
-	}else if (*(route + current + 1)%MAP_WIDTH > *(route + current)%MAP_WIDTH){	//East
-		rel_direction = 0;
-	}else if (*(route + current + 1)%MAP_WIDTH < *(route + current)%MAP_WIDTH){	//West
-		rel_direction = 180;
-	} else {
-		// printf("wrong rel_direction\n");
-	}
-
-	if(abs(current_direction - rel_direction) == 180){
-		return 1;
-	} else {
-		return 0;
-	}
-}
 
 int16_t conv_location(int16_t x, int16_t y){
 	int16_t x_out, y_out;
@@ -165,6 +126,14 @@ int16_t conv_location(int16_t x, int16_t y){
 	// printf("conv_location = %i, %i\n", ((int16_t)y_f)%MAP_WIDTH, ((int16_t)x_f));
 
 	return (y_out * MAP_WIDTH + x_out);
+}
+
+void conv_location_pixel(int16_t x_node, int16_t y_node, int16_t *x_pixel, int16_t *y_pixel){
+	float pixel_x = MAP_WIDTH_PIXEL / MAP_WIDTH;
+	float pixel_y = MAP_HEIGHT_PIXEL / MAP_HEIGHT;
+
+	*x_pixel = (int16_t)(x_node * pixel_x);
+	*y_pixel = (int16_t)(y_node * pixel_y);
 }
 
 void clear_route(int16_t *route, int16_t steps){

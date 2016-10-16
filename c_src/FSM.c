@@ -32,7 +32,7 @@ void FSM(){
     init_FSM();
     CS.count = 0;
     CS.step_counter = 0;
-    CS.food_index = 0;
+    CS.food_index = 3;
     data_main* rf_data;
     rf_data = rf_Handler_init();
     //TODO:
@@ -55,7 +55,11 @@ void FSM(){
 
 
 void unknown(struct State* state,motion_type current_motion,data_main *rf_data){
-
+    CyGlobalIntDisable;
+    for(;;){
+        TOGGLE_LED;
+        CyDelay(1000);
+    }
 }
 
 void calculate(struct State* state,motion_type current_motion,data_main *rf_data){
@@ -65,14 +69,14 @@ void calculate(struct State* state,motion_type current_motion,data_main *rf_data
     // data_main* temp_rf_data;
     // temp_rf_data = state->rf_data;
     // int i;
-    // for(i = 0; i < 5; i++){
+    // for(i = 0; i < 3; i++){
     //     // CyDelay(100);
     //     while(!is_handled()){check_RF(rf_data);}
     //     clear_handled();    
     // }
     clear_route(route,285);
 
-     int16_t x, y, angl;
+      int16_t x, y, angl;
 
     if (state->count == 0){
         x = 63;
@@ -81,10 +85,10 @@ void calculate(struct State* state,motion_type current_motion,data_main *rf_data
         state->count = state->count + 1;
     } 
 
-    state->count = state->count + 1;
+
     //state->steps = find_path(2,map,route,x,y,1,3);
     
-    steps = find_path(1,map,route,x, y, food_packets[state->food_index][0],food_packets[state->food_index][1]);
+    steps = find_path(2,map,route,x, y, food_packets[state->food_index][0],food_packets[state->food_index][1]);
     // state->steps = find_path(2,*map,state->route,63,380,food_packets[0][0],food_packets[0][1]);
     state->current_decision = STRAIGHT;
     state->next_state = execute;
@@ -112,31 +116,8 @@ void execute(struct State* state,motion_type current_motion,data_main *rf_data){
     //should give some feedback to the outer path-find module which contains all the instruction
     
     check_RF(rf_data);
-
-
-    // if(are_we_there_yet(rf_data->robot_xpos,rf_data->robot_ypos,food_packets[state->food_index][0],food_packets[state->food_index][1])){
-    //     if(state->food_index < 4){
-    //         state->food_index = state->food_index +1;    
-    //         state->current_decision = STOP; 
-    //         state->next_state = recalculate;
-    //     }
-    // } else{
-    //     if(current_motion == AT_INTERSECTION){
-    //         state->next_state = update;
-    //     }
-    //     else if(current_motion == GOING_STRAIGHT){
-    //         //LED_Write(1);
-    //         state->fsm_state = STATE_IN_PROGRESS;
-    //         //state->current_decision = STRAIGHT;
-    //         state->next_state = execute;
-    //     }
-    // }
-    if(turn_around(route,steps,rf_data->robot_xpos,rf_data->robot_ypos,rf_data->robot_orientation,&(state->count))){
-        state->current_decision = TURN_AROUND;
-        state->next_state = execute;
-    }
-    else if(current_motion == AT_INTERSECTION){
-        state->next_state = update;
+    if(current_motion == AT_INTERSECTION){
+            state->next_state = update;
     }
     else if(current_motion == GOING_STRAIGHT){
         //LED_Write(1);
@@ -144,46 +125,46 @@ void execute(struct State* state,motion_type current_motion,data_main *rf_data){
         //state->current_decision = STRAIGHT;
         state->next_state = execute;
     }
+
+    if(are_we_there_yet(rf_data->robot_xpos,rf_data->robot_ypos,food_packets[state->food_index][0],food_packets[state->food_index][1])){
+        if(state->food_index < 4){ 
+            state->next_state = recalculate;
+        } else {
+            state->current_decision = STOP;
+            state->next_state = unknown;
+        }
+    } 
+
     
 }
 
 void update(struct State* state,motion_type current_motion,data_main *rf_data){
     //update next instruction
-    
+    decision_type next_decision;
     int i;
     for(i = 0; i < 2; i++){
-        // CyDelay(50);
+        CyDelay(50);
         while(!is_handled()){check_RF(rf_data);}
         clear_handled();    
     }
-    // if (state->count == 1){
-    //     state->current_decision = TURN_RIGHT;        
-    //     state->count = state->count +1;
-    // } 
-    // else if (state->count == 2){
-    //     state->current_decision = TURN_AROUND;
-    //     state->count = state->count +1;
-    // } else if (state->count == 3){
-    //     state->current_decision = TURN_LEFT;
-    //     state->count =  state->count +1;
-    // }
+
 
     // if(are_we_there_yet(rf_data->robot_xpos,rf_data->robot_ypos,food_packets[state->food_index][0],food_packets[state->food_index][1])){
     //     if(state->food_index < 4){
-    //         state->food_index = state->food_index +1;     
+    //         state->food_index = state->food_index + 1;     
     //         state->next_state = recalculate;
+    //     } else {
+    //         state->current_decision = STOP;
+    //         state->next_state = unknown;
     //     }
-    // } else{
+    // } else {
     //     next_decision = next_turn(route,steps,rf_data->robot_xpos,rf_data->robot_ypos,rf_data->robot_orientation,0);
     //     state->current_decision = next_decision;
     //     state->fsm_state = STATE_UPDATED;
     //     state->next_state = execute;
     // }
-
-    decision_type next_decision;
-    next_decision = next_turn(route,steps,rf_data->robot_xpos,rf_data->robot_ypos,rf_data->robot_orientation,&(state->count));
+    next_decision = next_turn(route,steps,rf_data->robot_xpos,rf_data->robot_ypos,rf_data->robot_orientation,0);
     state->current_decision = next_decision;
-   
     state->fsm_state = STATE_UPDATED;
     state->next_state = execute;
     // int16_t x, y, angl;
@@ -210,14 +191,29 @@ void update(struct State* state,motion_type current_motion,data_main *rf_data){
 }
 
 void recalculate(struct State* state,motion_type current_motion,data_main *rf_data){
+
+    int i;
+    for(i = 0; i < 2; i++){
+        CyDelay(50);
+        while(!is_handled()){check_RF(rf_data);}
+        clear_handled();    
+    }
+    state->food_index = state->food_index + 1;
+    if (state->food_index == 4){
+        LED_Write(1);
+    }
+
+    //LED_Write(~LED_Read());
     clear_route(route,285);
-    decision_type next_decision;
+   // decision_type next_decision;
     steps = find_path(2,map,route,rf_data->robot_xpos, rf_data->robot_ypos, food_packets[state->food_index][0],food_packets[state->food_index][1]);
-    next_decision = next_turn(route,steps,rf_data->robot_xpos,rf_data->robot_ypos,rf_data->robot_orientation,0);
-    state->current_decision = next_decision;
-    state->fsm_state = STATE_UPDATED;
-    state->next_state = execute;
+    state->next_state = update;
+    // next_decision = next_turn(route,steps,rf_data->robot_xpos,rf_data->robot_ypos,rf_data->robot_orientation,0);
+    // state->current_decision = next_decision;
+    // state->fsm_state = STATE_UPDATED;
+    // state->next_state = execute;
 }
+
 
 
 uint8 get_pid_start(){
