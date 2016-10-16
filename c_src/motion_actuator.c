@@ -11,7 +11,10 @@
 */
 
 /* [] END OF FILE */
+/* 
+    CODE FOR MOTION ACTUATOR WITH TURNING AROUNG STUFF
 
+*/
 #include "motion_actuator.h"
 
 
@@ -48,7 +51,28 @@ CY_ISR(isr_button){
 }
 
 CY_ISR(timer_isr){
-    turned = 0;
+    timer_ovrflw++;
+    if(side_sensor_turn_around_flag == 1){
+        if(timer_ovrflw > 9){
+            turn_around_flag = 0;
+        }
+        if(timer_ovrflw > 18){
+        
+            side_sensor_turn_around_flag = 0;
+            timer_ovrflw = 0;
+        }
+    }
+    
+
+    if(timer_ovrflw > 8){
+        turned = 0;
+    }
+
+    
+
+
+
+    
 }
 
 
@@ -56,7 +80,10 @@ CY_ISR(timer_isr){
 void init_motion_actuator(){
     start_sensor_isr();
     init_motor_control();
-    
+    turned = 0;
+    timer_ovrflw = 0;
+    turn_around_flag = 0;
+    side_sensor_turn_around_flag = 0;
     isr_TS_StartEx(timer_isr);
 }
 
@@ -88,11 +115,13 @@ void motion_straight(struct motion_state* m_state,decision_type decision, update
         m_adjust_left();
         m_state->next_state = motion_straight;
         // m_state->next_state = motion_adjust_left;
-    } else if (s_m == OUT_LINE){
-        m_state->next_state = motion_stop_buffer;
+    }
+     else if (s_m == OUT_LINE){
+        m_state->current_motion = TURNING;
+        m_state->next_state = motion_turn_around;
     }
 
-    if(turned == 0){
+    if(turned == 0 && side_sensor_turn_around_flag == 0){
         Timer_TS_Stop();
         if(s_l == IN_LINE || s_r == IN_LINE){
             m_stop();
@@ -102,6 +131,12 @@ void motion_straight(struct motion_state* m_state,decision_type decision, update
 }
 
 
+void motion_straight_buffer(struct motion_state* m_state,decision_type decision, update_states fsm_state){
+    block_intersection_sensors();
+    m_straight();
+    m_state->current_motion = GOING_STRAIGHT;
+    m_state->next_state = motion_straight;
+}
 
 void motion_adjust_left(struct motion_state* m_state,decision_type decision, update_states fsm_state){
     m_state->current_motion = ADJUSTING;
@@ -138,33 +173,45 @@ void motion_stop(struct motion_state* m_state,decision_type decision, update_sta
     m_stop();
     if(decision == TURN_LEFT){
         if(s_fl == IN_LINE || s_fr == IN_LINE){
+            m_state->current_motion = TURNING_BUFFER;
             m_state->next_state = motion_turning_buffer;
         }
         else{
+            m_state->current_motion = TURNING;
             m_state->next_state = motion_turn_left;
         }
     }
     else if(decision == TURN_RIGHT){
         if(s_fl == IN_LINE || s_fr == IN_LINE){
+            m_state->current_motion = TURNING_BUFFER;
             m_state->next_state = motion_turning_buffer;
         }
         else{
+            m_state->current_motion = TURNING;
             m_state->next_state = motion_turn_right;
         }
     }
     else if(decision == STRAIGHT){
+        m_state->current_motion = GOING_STRAIGHT;
         m_state->next_state = motion_straight;
     }
     else if(decision == STOP){
         m_state->next_state = motion_stop;
+    }
+    else if(decision == TURN_AROUND){
+        m_state->current_motion = TURNING;
+        m_state->next_state = motion_turn_around;
     }
 }
 
 
 void motion_turn_left(struct motion_state* m_state,decision_type decision, update_states fsm_state){
     m_state->current_motion = TURNING;
-    block_intersection_sensors();
-    if(s_fr == IN_LINE || s_fl == IN_LINE){
+    if(side_sensor_turn_around_flag == 0){
+        block_intersection_sensors();
+    }
+    
+    if(s_fr == IN_LINE && s_fl == IN_LINE){
         m_straight();
         m_state->next_state = motion_straight;
     }
@@ -176,8 +223,12 @@ void motion_turn_left(struct motion_state* m_state,decision_type decision, updat
 
 void motion_turn_right(struct motion_state* m_state,decision_type decision, update_states fsm_state){
     m_state->current_motion = TURNING;
-    block_intersection_sensors();
-    if(s_fr == IN_LINE || s_fl == IN_LINE){
+    
+
+    if(side_sensor_turn_around_flag == 0){
+        block_intersection_sensors();
+    }
+    if(s_fr == IN_LINE && s_fl == IN_LINE){
         m_straight();
         m_state->next_state = motion_straight;
     }
@@ -187,9 +238,7 @@ void motion_turn_right(struct motion_state* m_state,decision_type decision, upda
     }
 }
 
-void motion_turn_around(struct motion_state* m_state,decision_type decision, update_states fsm_state){
 
-}
 
 void motion_turning_buffer(struct motion_state* m_state,decision_type decision, update_states fsm_state){
 //this is the state that will handle the intersection turning or any other states that needs a intermediate buffer
@@ -219,6 +268,22 @@ void motion_turning_buffer(struct motion_state* m_state,decision_type decision, 
 
 }
 
+void motion_turn_around(struct motion_state* m_state,decision_type decision, update_states fsm_state){
+    //block_front_sensors();
+    // if(turn_around_flag == 0){
+    //     m_state->next_state = motion_turn_left;
+    // }else{
+    // }
+    m_state->current_motion = TURNING;
+    
+    if(turn_around_flag == 1){
+        m_turn_left();
+        m_state->next_state = motion_turn_around;
+    } else{
+        m_state->next_state = motion_turn_left;
+    }
+}
+
 void motion_stop_buffer(struct motion_state* m_state,decision_type decision, update_states fsm_state){
     m_state->current_motion = AT_INTERSECTION;
     m_stop();
@@ -245,25 +310,20 @@ void motion_stop_buffer(struct motion_state* m_state,decision_type decision, upd
         }
         else if(decision == STRAIGHT){
             m_state->current_motion = GOING_STRAIGHT;
-            block_intersection_sensors();
-            m_state->next_state = motion_straight;
+            m_state->next_state = motion_straight_buffer;
         }
         else if(decision == STOP){
             m_state->current_motion = STOPPED;
             m_state->next_state = motion_stop;
         }
         else if(decision == TURN_AROUND){
-            if(s_fr == IN_LINE || s_fl == IN_LINE){
-                m_state->current_motion = TURNING_BUFFER;
-                m_state->next_state = motion_turning_buffer;
-            }
-            else{
-                m_state->current_motion = TURNING;
-                m_state->next_state = motion_turn_left;
-            }
+            
+            block_front_sensors();
+            m_state->current_motion = TURNING;
+            m_state->next_state = motion_turn_around;
         }
         else if(decision == OUT_OF_BOUNDS){
-            LED_Write(~LED_Read());
+            LED_Write(1);
 
         }
     }
@@ -281,6 +341,17 @@ uint8 get_state_complete(){
 }
 
 void block_intersection_sensors(){
+    Timer_TS_Stop();
+    timer_ovrflw = 0;
+    turned = 1;
+    Timer_TS_Start();
+}
+
+void block_front_sensors(){
+    Timer_TS_Stop();
+    timer_ovrflw = 0;
+    turn_around_flag = 1;
+    side_sensor_turn_around_flag = 1;
     turned = 1;
     Timer_TS_Start();
 }

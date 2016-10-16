@@ -113,7 +113,6 @@ int16_t turn_around(int16_t *route, int16_t steps, int16_t x, int16_t y, int16_t
 	for (i = temp; i < steps; i++){
 		if (*(route + i) == current){
 			current = i;
-			*counter = i;
 			break;
 		}
 	}
