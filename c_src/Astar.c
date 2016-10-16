@@ -12,7 +12,7 @@
 
 #include "Astar.h"
 //#include "project.h"
-#include "project.h"
+//#include "project.h"
 
 
 static void init_astar(int16_t *open, int16_t *closed, int16_t *parent, int16_t *g_cost, int16_t size);
@@ -117,7 +117,7 @@ int16_t astar(int16_t map[15][19], int16_t width, int16_t height, int16_t *route
 	flip_array(traced_route, route, steps);
 
 	for (i = 0; i < steps; i++){
-		// printf("route[%i] = %i (%i, %i)\n", i, *(route+i),*(route+i)%MAP_WIDTH, *(route+i)/MAP_WIDTH);
+		printf("route[%i] = %i (%i, %i)\n", i, *(route+i),*(route+i)%MAP_WIDTH, *(route+i)/MAP_WIDTH);
 	}
 
 	// printf("closed [start] = %i\n", *(closed+start));
