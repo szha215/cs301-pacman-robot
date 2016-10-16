@@ -64,7 +64,7 @@ CY_ISR(timer_isr){
     }
     
 
-    if(timer_ovrflw > 7){
+    if(timer_ovrflw > 6){
         turned = 0;
     }
 
@@ -117,8 +117,8 @@ void motion_straight(struct motion_state* m_state,decision_type decision, update
         // m_state->next_state = motion_adjust_left;
     }
      else if (s_m == OUT_LINE){
-        m_state->current_motion = TURNING;
-        m_state->next_state = motion_turn_around;
+        //m_state->current_motion = TURNING;
+        m_state->next_state = motion_stop;
     }
 
     if(turned == 0 && side_sensor_turn_around_flag == 0){

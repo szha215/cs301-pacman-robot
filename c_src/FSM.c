@@ -32,7 +32,7 @@ void FSM(){
     init_FSM();
     CS.count = 0;
     CS.step_counter = 0;
-    CS.food_index = 3;
+    CS.food_index = 0;
     data_main* rf_data;
     rf_data = rf_Handler_init();
     //TODO:
@@ -76,19 +76,19 @@ void calculate(struct State* state,motion_type current_motion,data_main *rf_data
     // }
     clear_route(route,285);
 
-      int16_t x, y, angl;
+      // int16_t x, y, angl;
 
-    if (state->count == 0){
-        x = 63;
-        y = 361;
-        angl = 0;
-        state->count = state->count + 1;
-    } 
+    // if (state->count == 0){
+    //     x = 63;
+    //     y = 361;
+    //     angl = 0;
+    //     state->count = state->count + 1;
+    // } 
 
 
     //state->steps = find_path(2,map,route,x,y,1,3);
     
-    steps = find_path(2,map,route,x, y, food_packets[state->food_index][0],food_packets[state->food_index][1]);
+    steps = find_path(2,map,route,63, 361, food_packets[state->food_index][0],food_packets[state->food_index][1]);
     // state->steps = find_path(2,*map,state->route,63,380,food_packets[0][0],food_packets[0][1]);
     state->current_decision = STRAIGHT;
     state->next_state = execute;
@@ -129,6 +129,7 @@ void execute(struct State* state,motion_type current_motion,data_main *rf_data){
     if(are_we_there_yet(rf_data->robot_xpos,rf_data->robot_ypos,food_packets[state->food_index][0],food_packets[state->food_index][1])){
         if(state->food_index < 4){ 
             state->next_state = recalculate;
+            state->current_decision = STOP;
         } else {
             state->current_decision = STOP;
             state->next_state = unknown;
@@ -164,9 +165,15 @@ void update(struct State* state,motion_type current_motion,data_main *rf_data){
     //     state->next_state = execute;
     // }
     next_decision = next_turn(route,steps,rf_data->robot_xpos,rf_data->robot_ypos,rf_data->robot_orientation,0);
-    state->current_decision = next_decision;
-    state->fsm_state = STATE_UPDATED;
-    state->next_state = execute;
+    if(next_decision == OUT_OF_BOUNDS){
+
+        state->next_state = recalculate;
+        state->current_decision = next_decision;
+    } else{
+        state->current_decision = next_decision;
+        state->fsm_state = STATE_UPDATED;
+        state->next_state = execute;
+    }
     // int16_t x, y, angl;
     // if (state->count == 1){
     //     x = 173;
@@ -198,7 +205,10 @@ void recalculate(struct State* state,motion_type current_motion,data_main *rf_da
         while(!is_handled()){check_RF(rf_data);}
         clear_handled();    
     }
-    state->food_index = state->food_index + 1;
+    if(state->current_decision != OUT_OF_BOUNDS){
+        state->food_index = state->food_index + 1;
+
+    }
     if (state->food_index == 4){
         LED_Write(1);
     }

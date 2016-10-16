@@ -111,13 +111,13 @@ int16_t conv_location(int16_t x, int16_t y){
 	x_decimal = x_f - (int16_t)x_f;
 	y_decimal = y_f - (int16_t)y_f;
 
-	if (x_decimal > 0.8){
+	if (x_decimal > 0.79){
 		x_out = (int16_t)x_f + 1;
 	} else {
 		x_out = (int16_t)x_f;
 	}
 
-	if (y_decimal > 0.8){
+	if (y_decimal > 0.88){
 		y_out = (int16_t)y_f + 1;
 	} else {
 		y_out = (int16_t)y_f;
