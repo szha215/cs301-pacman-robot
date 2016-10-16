@@ -55,7 +55,11 @@ void FSM(){
 
 
 void unknown(struct State* state,motion_type current_motion,data_main *rf_data){
-
+    CyGlobalIntDisable;
+    for(;;){
+        TOGGLE_LED;
+        CyDelay(500);
+    }
 }
 
 void calculate(struct State* state,motion_type current_motion,data_main *rf_data){
@@ -120,7 +124,7 @@ void execute(struct State* state,motion_type current_motion,data_main *rf_data){
             state->current_decision = STOP; 
             state->next_state = recalculate;
         }
-    } else{
+    } else {
         if(current_motion == AT_INTERSECTION){
             state->next_state = update;
         }

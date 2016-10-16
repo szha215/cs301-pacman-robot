@@ -21,7 +21,7 @@ int16_t find_path(uint8_t level, int16_t map[15][19], int16_t *route, int16_t st
 	printf("FIND_PATH DEST  = %i\n", destination);
 	
 	if (level == 1){
-		//return dfs_traverse(route, start);
+		return dfs_traverse(route, start);
 	} else if (level == 2){
 		return astar(map, MAP_WIDTH, MAP_HEIGHT, route, start, destination);
 	} else if (level == 3){
@@ -36,7 +36,7 @@ decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int
 	int16_t i, temp, rel_direction, current_direction;	//next direction => 0=north, 1=south, 2=east, 3=west
 	uint8_t in_bound = 0;
 
-	printf("next_turn: current before = %i\n", current);
+	printf("next_turn: current before = %i (%i, %i)\n", current, current%MAP_WIDTH, current/MAP_WIDTH);
 
 	if (counter == 0){
 		temp = 0;
@@ -52,13 +52,13 @@ decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int
 			break;
 		}
 	}
-
+printf("TEST\n");
 	if (in_bound == 0){
 	
 		return OUT_OF_BOUNDS;
 	}
 
-	printf("next_turn: current after = %i\n", current);
+	printf("next_turn: current after = %i (%i, %i)\n", current, current%MAP_WIDTH, current/MAP_WIDTH);
 	// printf("next y = %i\n", *(route + current + 1)/MAP_WIDTH);
 
 	if (*(route + current + 1)/MAP_WIDTH < *(route + current)/MAP_WIDTH){	//North
@@ -98,16 +98,74 @@ decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int
 
 }
 
-int16_t conv_location(int16_t x, int16_t y){
-	float x_f = (float)x/MAP_WIDTH_PIXEL * MAP_WIDTH;
-	float y_f = (float)y/MAP_HEIGHT_PIXEL * MAP_HEIGHT;
+int16_t turn_around(int16_t *route, int16_t steps, int16_t x, int16_t y, int16_t angle, int16_t *counter){
+	int16_t current = conv_location(x, y);
+	int16_t i, temp, rel_direction, current_direction;	//next direction => 0=north, 1=south, 2=east, 3=west
 
+	printf("next_turn: current before = %i (%i, %i)\n", current, current%MAP_WIDTH, current/MAP_WIDTH);
+
+	if (counter == 0){
+		temp = 0;
+	} else {
+		temp = *counter;
+	}
+
+	for (i = temp; i < steps; i++){
+		if (*(route + i) == current){
+			current = i;
+			*counter = i;
+			break;
+		}
+	}
+
+	//printf("next_turn: current after = %i (%i, %i)\n", current, current%MAP_WIDTH, current/MAP_WIDTH);
+	// printf("next y = %i\n", *(route + current + 1)/MAP_WIDTH);
+
+	if (*(route + current + 1)/MAP_WIDTH < *(route + current)/MAP_WIDTH){	//North
+		rel_direction = 90;
+	}else if (*(route + current + 1)/MAP_WIDTH > *(route + current)/MAP_WIDTH){	//South
+		rel_direction = 270;
+	}else if (*(route + current + 1)%MAP_WIDTH > *(route + current)%MAP_WIDTH){	//East
+		rel_direction = 0;
+	}else if (*(route + current + 1)%MAP_WIDTH < *(route + current)%MAP_WIDTH){	//West
+		rel_direction = 180;
+	} else {
+		// printf("wrong rel_direction\n");
+	}
+
+	if(abs(current_direction - rel_direction) == 180){
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+int16_t conv_location(int16_t x, int16_t y){
+	int16_t x_out, y_out;
+	float x_f, x_decimal;
+	float y_f, y_decimal;
+
+	x_f = (float)x/MAP_WIDTH_PIXEL * MAP_WIDTH;
+	y_f = (float)y/MAP_HEIGHT_PIXEL * MAP_HEIGHT;
+
+	x_decimal = x_f - (int16_t)x_f;
+	y_decimal = y_f - (int16_t)y_f;
+
+	if (x_decimal > 0.8){
+		x_out = (int16_t)x_f + 1;
+	} else {
+		x_out = (int16_t)x_f;
+	}
+
+	if (y_decimal > 0.8){
+		y_out = (int16_t)y_f + 1;
+	} else {
+		y_out = (int16_t)y_f;
+	}
 
 	// printf("conv_location = %i, %i\n", ((int16_t)y_f)%MAP_WIDTH, ((int16_t)x_f));
 
-
-
-	return ((int16_t)((y_f)) * MAP_WIDTH + (int16_t)(x_f));
+	return (y_out * MAP_WIDTH + x_out);
 }
 
 void clear_route(int16_t *route, int16_t steps){
@@ -139,22 +197,7 @@ int16_t round_angle(int16_t angle){
 }
 
 
-/*
-hello i am zambo. i am a big boy from auckland in new zealand. i like grapefruits and silly things. the quick brown fox jumps over the lazy dog. lorem ipsum dolor sit amet.
-in west philadelphia born and raised, in the playground was where i spent most of my days. chilling out maxing and relaxing
-all cool and shooting some b ball after school. when a couple of guys who were up to no good, started
-making trouble in my neighbourhood. i got in one little fight and my momma got scared and she said "you're going to 
-live with your auntie and uncle in bel air"
 
-the rusted chains of prison moons are shattered by the sun. i walk the road, horizons change, the
-tournaments begun. the purple piper plays his tune, the choir softly sings, three lullabies
-in an ancient tongue for the court of the crimson king.
-
-a star kinda works?  can make it work individually. the thing with turn around, you can make it 
-blocking. it IS blocking. cydelay. not that much blocking. ARM. Thumb. Pinky. the thumb instruction set.
-what does it even do? you should read the ARM arm. what does arm even stand for? the other arm.
-architecture reference manual. keep thinking wher
-*/
 
 
 
