@@ -44,6 +44,7 @@ struct State{
    	decision_type current_decision;
    	update_states fsm_state;
    	// int16_t *route;
+   	uint8_t level;
    	int16_t steps;
    	int16_t count;
    	int16_t step_counter;
@@ -67,7 +68,7 @@ void recalculate(struct State* state,motion_type current_motion,data_main *rf_da
 uint8 get_pid_start();
 void set_pid_start(uint8 start);
 
-
+uint8 dip_read();
 
 
 #endif

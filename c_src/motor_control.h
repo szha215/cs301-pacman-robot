@@ -42,9 +42,11 @@
 #define M_FORWARD_MAX 255
 #define M_BACKWARD_MAX 0
 
-#define M1_FORWARD 160
-#define M2_FORWARD 165
+#define M1_FORWARD 158
+#define M2_FORWARD 163
 
+    
+    
 
 
 #define M1_FORWARD_SLOW 156

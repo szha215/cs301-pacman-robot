@@ -118,7 +118,7 @@ int main()
 	
     //CyDelay(1000);
     
-    uint8 dip_val = 0x00;
+   // uint8 dip_val = 0x00;
 
 	
     CyGlobalIntEnable;
@@ -127,20 +127,20 @@ int main()
     
     //char tempString[BUF_SIZE];
     
-    dip_val = dip_read();
+    //dip_val = dip_read();
     
     USBUART_Start(0,USBUART_5V_OPERATION);
-    data_main* RF_data;
-    //RF_data = rf_Handler_init();
+
 
     // for(;;){}
 
-    if(dip_val == 1){
-        CyDelay(1000);
-        FSM();
-    }
+    //if(dip_val == 1){
+    CyDelay(1000);
+    FSM();
+    //}
 
-    
+    data_main* RF_data;
+    RF_data = rf_Handler_init();   
    
     char tempString[BUF_SIZE];
     // Something critical happened if the program gets here
@@ -207,13 +207,6 @@ void s_interrupts_enable(){
     int_en = 1;
 }
 
-uint8 dip_read(){
-    uint8 output = 0x00; 
-    
-    // Active low switches
-    output |= (DIP_0_Read() << 0) | (DIP_1_Read() << 1) | (DIP_2_Read() << 2) | (DIP_3_Read() << 3);
-    
-    return output;
-}
+
 
 
