@@ -57,7 +57,7 @@ decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int
 	}
 
 	if (in_bound == 0){
-		LED_Write(~LED_Read());
+		//LED_Write(~LED_Read());
 		return OUT_OF_BOUNDS;
 	}
 
@@ -138,6 +138,7 @@ int16_t turn_around(int16_t *route, int16_t steps, int16_t x, int16_t y, int16_t
 	}
 
 	if(abs(current_direction - rel_direction) == 180){
+		LED_Write(1);
 		*counter = i;
 		return 1;
 	} else {

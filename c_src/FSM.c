@@ -147,11 +147,13 @@ void execute(struct State* state,motion_type current_motion,data_main *rf_data){
         // decision_type next_decision;
         // next_decision = next_turn(route,steps,rf_data->robot_xpos,rf_data->robot_ypos,rf_data->robot_orientation,&(state->step_counter));
         // if(turn_around(route,steps,rf_data->robot_xpos,rf_data->robot_ypos,rf_data->robot_orientation,&(state->step_counter))){
-        //     LED_Write(1);
-        //     state->next_state = execute;
-        //     state->fsm_state = STATE_UPDATED;
-        //     state->current_decision = TURN_AROUND;
-        // } 
+            // LED_Write(1);
+        if(turn_around(route,steps,rf_data->robot_xpos,rf_data->robot_ypos,rf_data->robot_orientation,&(state->step_counter))){
+
+            state->next_state = execute;
+            state->fsm_state = STATE_UPDATED;
+            state->current_decision = TURN_AROUND;
+        } 
         
         // state->current_decision = next_decision;
         // state->next_state = execute;

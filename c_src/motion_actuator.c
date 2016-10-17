@@ -101,12 +101,40 @@ void motion_straight(struct motion_state* m_state,decision_type decision, update
     
     m_straight();
     m_state->current_motion = GOING_STRAIGHT;
-    if(decision == TURN_AROUND){
-        block_front_sensors();
-        m_state->current_motion = TURNING;
-        m_state->next_state = motion_turn_around;
-    } else{
-        if (s_fl == IN_LINE && s_fr == IN_LINE){
+    // if(decision == TURN_AROUND){
+    //     block_front_sensors();
+    //     m_state->current_motion = TURNING;
+    //     m_state->next_state = motion_turn_around;
+    // } else{
+    //     if (s_fl == IN_LINE && s_fr == IN_LINE){
+    //         m_state->next_state = motion_straight;
+            
+    //     // adjust right
+    //     } else if (s_fl == OUT_LINE && s_fr == IN_LINE) {
+    //         m_adjust_right();
+    //         m_state->next_state = motion_straight;
+    //         // m_state->next_state = motion_adjust_right;
+            
+    //     // adjust left
+    //     } else if (s_fr == OUT_LINE && s_fl == IN_LINE) {
+    //         m_adjust_left();
+    //         m_state->next_state = motion_straight;
+    //         // m_state->next_state = motion_adjust_left;
+    //     }
+    //      else if (s_m == OUT_LINE){
+    //         //m_state->current_motion = TURNING;
+    //         m_state->next_state = motion_stop;
+    //     }
+
+    //     if(turned == 0 && side_sensor_turn_around_flag == 0){
+    //         Timer_TS_Stop();
+    //         if(s_l == IN_LINE || s_r == IN_LINE){
+    //             m_stop();
+    //             m_state->next_state = motion_stop_buffer;
+    //         }
+    //     }
+    // }
+    if (s_fl == IN_LINE && s_fr == IN_LINE){
             m_state->next_state = motion_straight;
             
         // adjust right
@@ -133,7 +161,6 @@ void motion_straight(struct motion_state* m_state,decision_type decision, update
                 m_state->next_state = motion_stop_buffer;
             }
         }
-    }
 
     
 }
@@ -331,7 +358,7 @@ void motion_stop_buffer(struct motion_state* m_state,decision_type decision, upd
             m_state->next_state = motion_turn_around;
         }
         else if(decision == OUT_OF_BOUNDS){
-            LED_Write(1);
+            // LED_Write(1);
 
         }
     }
