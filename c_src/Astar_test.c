@@ -18,6 +18,19 @@
 #include "defines.h"
 #include "dfs_traverse.h"
 
+
+struct State;
+
+struct State{
+   	// int16_t *route;
+   	uint8_t level;
+   	int16_t steps;
+   	int16_t count;
+   	int16_t step_counter;
+   	uint8_t food_index;
+   	// data_main *rf_data;
+};
+
 int in_sett(int16_t *route, int steps, int node){
 	int i;
 
@@ -41,7 +54,7 @@ int main(void){
 
 	//steps = astar(map, MAP_WIDTH, MAP_HEIGHT, route, 1*MAP_WIDTH+1, 13*MAP_WIDTH+17);
 	// steps = find_path(2, map, route, 63, 380, food_packets[2][0], food_packets[2][1]);
-	steps = find_path(1, map, route, 63, 380, food_packets[2][0], food_packets[2][1]);
+	steps = find_path(1, map, route, 63, 361, food_packets[2][0], food_packets[2][1]);
 	//free(a);
 
 	printf("\n======================== ASTAR end\n");
@@ -61,13 +74,23 @@ int main(void){
 		printf("\n");
 	}
 
-	int16_t x = 702;
-	int16_t y = 383;
+	struct State cs;
+	cs.step_counter = 0;
+
+	struct State * cs_p = &cs;
+
+
+	int16_t x = 173;
+	int16_t y = 363;
 	int16_t angl = 0;
-	int16_t counter = 5;
+	int16_t counter = 0;
 	int16_t *counter_p = &counter;
-	
-	decision_type decision = next_turn(route, steps, x, y, angl, counter_p);
+	decision_type decision = STRAIGHT;
+//	decision_type decision = next_turn(route, steps, x, y, angl, counter_p);
+	int16_t decision_v = turn_around(route, steps, x, y, angl, &(cs_p->step_counter));
+	printf("TURN AROUND VALUE = %i\n", decision_v);
+	decision_v = turn_around(route, steps, x+2, y, angl, counter_p);
+	printf("TURN AROUND VALUE = %i\n", decision_v);
 
 	if (decision == STRAIGHT){
 		printf("decision = STRAIGHT\n");
@@ -88,6 +111,8 @@ int main(void){
 	if (decision == OUT_OF_BOUNDS){
 		printf("decision = OUT_OF_BOUNDS\n");
 	}
+
+	printf("TURN AROUND VALUE = %i\n", decision_v);
 
 	printf("ENUM SIZE = %i\n", sizeof(astar_status));
 
