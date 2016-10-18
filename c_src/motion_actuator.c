@@ -249,11 +249,11 @@ void motion_turn_left(struct motion_state* m_state,decision_type decision, updat
     
     if(s_fr == IN_LINE && s_fl == IN_LINE){
         m_straight();
+        clear_quad();
         m_state->next_state = motion_straight;
     }
     else{
         m_turn_left();
-        clear_quad();
         m_state->next_state = motion_turn_left;
     }
 }
@@ -267,11 +267,11 @@ void motion_turn_right(struct motion_state* m_state,decision_type decision, upda
     }
     if(s_fr == IN_LINE && s_fl == IN_LINE){
         m_straight();
+        clear_quad();
         m_state->next_state = motion_straight;
     }
     else{
         m_turn_right();
-        clear_quad();
         m_state->next_state = motion_turn_right;
     }
 }
