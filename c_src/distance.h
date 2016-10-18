@@ -19,7 +19,7 @@
 #include <stdint.h>
 #include <limits.h>
 #include "defines.h"
-#include "simulation.h"
+// #include "simulation.h"
 #ifndef SIMULATION_H
 	#include "project.h"
 #endif
@@ -35,7 +35,6 @@
 
 int16_t get_distance();
 void clear_quad();
-
 
 
 #endif

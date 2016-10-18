@@ -11,7 +11,7 @@
 */
 
 #include "pathfind.h"
-
+#include "project.h"
 // static int16_t dist_to_nodes(int16_t distance, int16_t angle);
 
 int16_t find_path(uint8_t level, int16_t map[15][19], int16_t *route, int16_t start_x, int16_t start_y, int16_t dest_x, int16_t dest_y){
@@ -225,6 +225,7 @@ decision_type dfs_next_turn(int16_t *route, int16_t steps, int16_t *prev_node, i
 
 	} else if (*angle < next_direction){
 		*angle = (*angle + 90)%360;
+		LED_Write(~LED_Read());
 		return TURN_LEFT;
 
 	} else {

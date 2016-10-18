@@ -11,7 +11,10 @@
 */
 
 #include "distance.h"
-#include "simulation.h"
+//#include "simulation.h"
+
+
+
 
 
 int16_t get_distance(){
@@ -19,7 +22,7 @@ int16_t get_distance(){
 
 	#ifndef SIMULATION_H
 		quad_avg = (QuadDec_M1_GetCounter() + QuadDec_M2_GetCounter()) / 2;
-
+		LED_Write(1);
 		return quad_avg * QUAD_TO_MM_RATIO;
 
 	#else

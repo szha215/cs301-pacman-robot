@@ -24,7 +24,6 @@
 #include "pathfind.h"
 #include "map.h"
 #include "USB_UART.h"
-
 //#define ANGLE_THRESHOLD 20
 
 
@@ -44,6 +43,8 @@ struct State{
    	decision_type current_decision;
    	update_states fsm_state;
    	// int16_t *route;
+      int16_t *angle;
+      int16_t *current_node;
    	uint8_t level;
    	int16_t steps;
    	int16_t count;

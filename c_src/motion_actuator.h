@@ -17,7 +17,7 @@
 #include "project.h"
 #include "motor_control.h"
 #include "defines.h"
-
+#include "distance.h"
 
 #define IN_LINE 1
 #define OUT_LINE 0
@@ -66,7 +66,6 @@ void motion_turn_around(struct motion_state* m_state,decision_type decision, upd
 void motion_turning_buffer(struct motion_state* m_state,decision_type decision, update_states fsm_state);
 void motion_stop_buffer(struct motion_state* m_state,decision_type decision, update_states fsm_state);
 void motion_straight_buffer(struct motion_state* m_state,decision_type decision, update_states fsm_state);
-
 
 
 void block_intersection_sensors();

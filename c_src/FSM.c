@@ -74,13 +74,16 @@ void calculate(struct State* state,motion_type current_motion,data_main *rf_data
     // data_main* temp_rf_data;
     // temp_rf_data = state->rf_data;
     // int i;
-    // for(i = 0; i < 3; i++){
+    // for(i = 0; i < 2; i++){
     //     // CyDelay(100);
     //     while(!is_handled()){check_RF(rf_data);}
     //     clear_handled();    
     // }
     clear_route(route,400);
-
+    // *(state->current_node) = conv_location(rf_data->robot_xpos,rf_data->robot_ypos);
+    *(state->current_node) = conv_location(173,363);
+    *(state->angle) = 0;
+    // *(state->angle) = round_angle(rf_data->robot_orientation/10);
       // int16_t x, y, angl;
 
     // if (state->count == 0){
@@ -94,8 +97,8 @@ void calculate(struct State* state,motion_type current_motion,data_main *rf_data
     //state->steps = find_path(2,map,route,x,y,1,3);
     
     // steps = find_path(2,map,route,63, 361, food_packets[state->food_index][0],food_packets[state->food_index][1]);
-    steps = find_path(state->level,map,route,63, 361, food_packets[state->food_index][0],food_packets[state->food_index][1]);
-   
+    steps = find_path(state->level,map,route,63,361, food_packets[state->food_index][0],food_packets[state->food_index][1]);
+    
     state->current_decision = STRAIGHT;
     state->next_state = execute;
     // char tempString[BUF_SIZE];
@@ -148,15 +151,17 @@ void execute(struct State* state,motion_type current_motion,data_main *rf_data){
         // next_decision = next_turn(route,steps,rf_data->robot_xpos,rf_data->robot_ypos,rf_data->robot_orientation,&(state->step_counter));
         // if(turn_around(route,steps,rf_data->robot_xpos,rf_data->robot_ypos,rf_data->robot_orientation,&(state->step_counter))){
             // LED_Write(1);
-        if(turn_around(route,steps,rf_data->robot_xpos,rf_data->robot_ypos,rf_data->robot_orientation,&(state->step_counter))){
-
-            state->next_state = execute;
-            state->fsm_state = STATE_UPDATED;
-            state->current_decision = TURN_AROUND;
+        state->fsm_state = STATE_IN_PROGRESS;
+        if(dfs_turn_around(route,steps,state->current_node,state->angle,&(state->step_counter))){
+            state->fsm_state = WAIT_TURN_AROUND;
+            state->next_state = update;
         } 
         
         // state->current_decision = next_decision;
         // state->next_state = execute;
+    } else if(state->level == 3){
+        state->current_decision = TURN_AROUND;
+         
     }
 
     
@@ -165,12 +170,12 @@ void execute(struct State* state,motion_type current_motion,data_main *rf_data){
 void update(struct State* state,motion_type current_motion,data_main *rf_data){
     //update next instruction
     decision_type next_decision;
-    int i;
-    for(i = 0; i < 2; i++){
-        CyDelay(50);
-        while(!is_handled()){check_RF(rf_data);}
-        clear_handled();    
-    }
+    // int i;
+    // for(i = 0; i < 2; i++){
+    //     CyDelay(50);
+    //     while(!is_handled()){check_RF(rf_data);}
+    //     clear_handled();    
+    // }
 
 
     // if(are_we_there_yet(rf_data->robot_xpos,rf_data->robot_ypos,food_packets[state->food_index][0],food_packets[state->food_index][1])){
@@ -190,10 +195,11 @@ void update(struct State* state,motion_type current_motion,data_main *rf_data){
     
     
     if(state->level == 1){
-        next_decision = next_turn(route,steps,rf_data->robot_xpos,rf_data->robot_ypos,rf_data->robot_orientation,&(state->step_counter));
+        next_decision = dfs_next_turn(route,steps,state->current_node,state->angle,&(state->step_counter));
         state->current_decision = next_decision;
         state->fsm_state = STATE_UPDATED;
         state->next_state = execute;
+
     } else if(state->level == 2){
         next_decision = next_turn(route,steps,rf_data->robot_xpos,rf_data->robot_ypos,rf_data->robot_orientation,0);
         if(next_decision == OUT_OF_BOUNDS){
