@@ -15,7 +15,6 @@
 
 #include "map.h"
 #include "dfs_vertex.h"
-#include "pathfind.h"
 #include "defines.h"
 #include "dfs_traverse.h"
 
@@ -44,6 +43,16 @@ int in_sett(int16_t *route, int steps, int node){
 	return 0;
 }
 
+int get_index(int16_t *route, int steps, int node){
+	int i;
+	for(i = 0; i < steps ; i++){
+		if( *(route+i) == node){
+			return i;
+		}
+	}
+	return 0;
+}
+
 void p_decision(decision_type decision){
 
 	if (decision == STRAIGHT){
@@ -66,7 +75,7 @@ void p_decision(decision_type decision){
 		printf("decision = OUT_OF_BOUNDS\n");
 	}
 }
-uint16_t conv_to_cell(uint16_t x,uint16_t y){
+uint16_t conv_to_node(uint16_t x,uint16_t y){
 	return y*MAP_WIDTH + x;
 }
 int main(void){
@@ -75,17 +84,34 @@ int main(void){
 	int i,j;
 	uint16_t steps = 0;
 
-
+	uint16_t start = 0;
+	uint16_t* vertex_list;
+	uint16_t* vertex_seq;
+	start = conv_to_node(1,7);
 	route = (int16_t*)malloc(MAP_WIDTH * MAP_HEIGHT * sizeof(int16_t));
-	steps = 
-	int vertex_counter = 0;
+	vertex_list = (int16_t*)malloc(MAP_WIDTH * MAP_HEIGHT * sizeof(int16_t));
+	vertex_seq = (int16_t*)malloc(MAP_WIDTH * MAP_HEIGHT * sizeof(int16_t));
+	steps = dfs_traverse(route,start);
+	int vertex_counter;
+	vertex_counter =  0;
+	int vertex_index = 0;
+	for(i = 0; i < steps;i ++){
+		if(is_vertex(*(route+i))){
+			*(vertex_list+vertex_index) = *(route+i);
+			*(vertex_seq+vertex_index) = vertex_index;
+			vertex_index++;
+		}
+	}
+
+	printf("vertex_index: %d\n",vertex_index );
 	for (i = 0; i < 15; i++){
 		for (j = 0; j < 19; j++){
 			if (map[i][j] == 1){
 				printf("%c", '#');
 			} else {
-				if(is_vertex(conv_to_cell(i,j))){
-					printf("$");
+
+				if(in_sett(vertex_list,vertex_index,conv_to_node(i,j))){
+					printf("%d",*(vertex_seq + get_index(vertex_list,vertex_index,conv_to_node(i,j))));
 					vertex_counter++;
 				}else{
 					printf("%c", ' ');
@@ -95,9 +121,8 @@ int main(void){
 		printf("\n");
 	}
 	printf("total vertices count: %d\n",vertex_counter);
-
-
-
+	free(vertex_list);
+	free(vertex_seq);
 	free(route);
 
 	
