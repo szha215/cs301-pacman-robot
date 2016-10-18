@@ -11,21 +11,25 @@
 */
 
 #include "pathfind.h"
-#include "project.h"
-// static int16_t dist_to_nodes(int16_t distance, int16_t angle);
 
-int16_t find_path(uint8_t level, int16_t map[15][19], int16_t *route, int16_t start_x, int16_t start_y, int16_t dest_x, int16_t dest_y){
+static int16_t next_node_angle(int16_t *route, int16_t current);
+static decision_type turn_decision(int16_t current_angle, int16_t next_angle);
+
+int16_t find_path(uint8_t level, int16_t map[15][19], int16_t *route, int16_t start_x, int16_t start_y, int16_t dest_node_x, int16_t dest_node_y){
 
 	int16_t start = conv_location(start_x, start_y);
-	int16_t destination = dest_y * MAP_WIDTH + dest_x;
+	int16_t destination = dest_node_y * MAP_WIDTH + dest_node_x;
+	int16_t *addi_cost = calloc(MAP_WIDTH*MAP_HEIGHT, sizeof(int16_t));
 
-	printf("FIND_PATH START = %i\n", start);
-	printf("FIND_PATH DEST  = %i\n", destination);
+	#ifdef SIMULATION_H
+		printf("FIND_PATH START = %i\n", start);
+		printf("FIND_PATH DEST  = %i\n", destination);
+	#endif
 	
 	if (level == 1){
 		return dfs_traverse(route, start);
 	} else if (level == 2){
-		return astar(map, MAP_WIDTH, MAP_HEIGHT, route, start, destination);
+		return a_star(map, addi_cost, route, start, destination);
 	} else if (level == 3){
 
 	}
@@ -33,20 +37,19 @@ int16_t find_path(uint8_t level, int16_t map[15][19], int16_t *route, int16_t st
 	return -5;
 }
 
+int16_t find_path_ghost(uint8_t level, int16_t map[15][19], int16_t *route, int16_t start_x, int16_t start_y, int16_t dest_node_x, int16_t dest_node_y){
+	//TODO
+
+}
+
 decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int16_t angle, int16_t *counter){
 	int16_t current = conv_location(x, y);
-	int16_t i, temp, rel_direction, current_direction;	//next direction => 0=north, 1=south, 2=east, 3=west
+	int16_t i, temp, next_direction, current_direction;	//next direction => 0=north, 1=south, 2=east, 3=west
 	uint8_t in_bound = 0;
 
 	printf("next_turn: current before = %i (%i, %i)\n", current, current%MAP_WIDTH, current/MAP_WIDTH);
 
-	if (counter == 0){
-		//LED_Write(1);
-		temp = 0;
-	} else {
-
-		temp = *counter;
-	}
+	temp = (counter == 0)? 0 : *counter;
 
 	for (i = temp; i < steps; i++){
 		if (*(route + i) == current){
@@ -58,61 +61,30 @@ decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int
 	}
 
 	if (in_bound == 0){
-		//LED_Write(~LED_Read());
 		return OUT_OF_BOUNDS;
 	}
 
 	printf("next_turn: current after = %i (%i, %i)\n", current, current%MAP_WIDTH, current/MAP_WIDTH);
 	// printf("next y = %i\n", *(route + current + 1)/MAP_WIDTH);
 
-	if (*(route + current + 1)/MAP_WIDTH < *(route + current)/MAP_WIDTH){	//North
-		rel_direction = 90;
-	}else if (*(route + current + 1)/MAP_WIDTH > *(route + current)/MAP_WIDTH){	//South
-		rel_direction = 270;
-	}else if (*(route + current + 1)%MAP_WIDTH > *(route + current)%MAP_WIDTH){	//East
-		rel_direction = 0;
-	}else if (*(route + current + 1)%MAP_WIDTH < *(route + current)%MAP_WIDTH){	//West
-		rel_direction = 180;
-	} else {
-		// printf("wrong rel_direction\n");
-	}
-	// printf("INPUT ANGLE = %i\n", angle);
-	// printf("RELATIVE ANGLE = %i\n", rel_direction);
+	next_direction = next_node_angle(route, current);
 
 	current_direction = round_angle(angle/10);
 
 	printf("CURRENT ANGLE = %i\n", current_direction);
-	printf("REL_ANGLE = %i\n", rel_direction);
+	printf("REL_ANGLE = %i\n", next_direction);
 
-	if(abs(current_direction - rel_direction) == 180){
-		return TURN_AROUND;
-	} else if (current_direction == 0 && rel_direction == 270){
-		return TURN_RIGHT;
-	} else if (current_direction == 270 && rel_direction == 0){
-		return TURN_LEFT;
-	} else if (current_direction == rel_direction){
-		return STRAIGHT;
-	} else if (current_direction > rel_direction){
-		return TURN_RIGHT;
-	} else if (current_direction < rel_direction){
-		return TURN_LEFT;
-	} else {
-		return STOP;
-	}
+	return turn_decision(current_direction, next_direction);
 
 }
 
 int16_t turn_around(int16_t *route, int16_t steps, int16_t x, int16_t y, int16_t angle, int16_t *counter){
 	int16_t current = conv_location(x, y);
-	int16_t i, temp, rel_direction, current_direction;	//next direction => 0=north, 1=south, =east, 3=west
+	int16_t i, temp, next_direction, current_direction;	//next direction => 0=north, 1=south, =east, 3=west
 
 	printf("next_turn: current before = %i (%i, %i)\n", current, current%MAP_WIDTH, current/MAP_WIDTH);
 
-	if (counter == 0){
-		temp = 0;
-	} else {
-		temp = *counter;
-	}
+	temp = (counter == 0)? 0 : *counter;
 
 	for (i = temp; i < steps; i++){
 		if (*(route + i) == current){
@@ -126,20 +98,9 @@ int16_t turn_around(int16_t *route, int16_t steps, int16_t x, int16_t y, int16_t
 	printf("next_turn: current after = %i (route = %i)\n", current, *(route+current));
 	// printf("next y = %i\n", *(route + current + 1)/MAP_WIDTH);
 
-	if (*(route + current + 1)/MAP_WIDTH < *(route + current)/MAP_WIDTH){	//North
-		rel_direction = 90;
-	}else if (*(route + current + 1)/MAP_WIDTH > *(route + current)/MAP_WIDTH){	//South
-		rel_direction = 270;
-	}else if (*(route + current + 1)%MAP_WIDTH > *(route + current)%MAP_WIDTH){	//East
-		rel_direction = 0;
-	}else if (*(route + current + 1)%MAP_WIDTH < *(route + current)%MAP_WIDTH){	//West
-		rel_direction = 180;
-	} else {
-		// printf("wrong rel_direction\n");
-	}
+	next_direction = next_node_angle(route, current);
 
-
-	if(abs(current_direction - rel_direction) == 180){
+	if(abs(current_direction - next_direction) == 180){
 		// LED_Write(1);
 		*counter = i;
 		return 1;
@@ -155,13 +116,12 @@ decision_type dfs_next_turn(int16_t *route, int16_t steps, int16_t *prev_node, i
 	decision_type decision;
 
 	current_node = calc_current_node(*prev_node, get_distance(), *angle);
-	printf("dfs_next: prev_node = %i, current node = %i\n", *prev_node, current_node);
-	if (counter == 0){
-		//LED_Write(1);
-		temp = 0;
-	} else {
-		temp = *counter;
-	}
+
+	#ifdef SIMULATION_H
+		printf("dfs_next: prev_node = %i, current node = %i\n", *prev_node, current_node);
+	#endif
+
+	temp = (counter == 0)? 0 : *counter;
 
 	for (i = temp; i < steps; i++){
 		if (*(route + i) == current_node){
@@ -177,26 +137,13 @@ decision_type dfs_next_turn(int16_t *route, int16_t steps, int16_t *prev_node, i
 		return TURN_AROUND;
 	}
 
+	next_direction = next_node_angle(route, current_index);
 
-	printf("next_turn: current after = %i (%i, %i)\n", current_index, current_index%MAP_WIDTH, current_index/MAP_WIDTH);
-	// printf("next y = %i\n", *(route + current + 1)/MAP_WIDTH);
-
-	if (*(route + current_index + 1)/MAP_WIDTH < *(route + current_index)/MAP_WIDTH){	//North
-		next_direction = 90;
-	}else if (*(route + current_index + 1)/MAP_WIDTH > *(route + current_index)/MAP_WIDTH){	//South
-		next_direction = 270;
-	}else if (*(route + current_index + 1)%MAP_WIDTH > *(route + current_index)%MAP_WIDTH){	//East
-		next_direction = 0;
-	}else if (*(route + current_index + 1)%MAP_WIDTH < *(route + current_index)%MAP_WIDTH){	//West
-		next_direction = 180;
-	} else {
-		// printf("wrong next_direction\n");
-	}
-	// printf("INPUT ANGLE = %i\n", angle);
-	// printf("RELATIVE ANGLE = %i\n", next_direction);
-
-	printf("CURRENT ANGLE = %i\n", *angle);
-	printf("REL_ANGLE = %i\n", next_direction);
+	#ifdef SIMULATION_H
+		printf("next_turn: current after = %i (%i, %i)\n", current_index, current_index%MAP_WIDTH, current_index/MAP_WIDTH);
+		printf("CURRENT ANGLE = %i\n", *angle);
+		printf("REL_ANGLE = %i\n", next_direction);
+	#endif
 
 	*prev_node = current_node;
 
@@ -205,9 +152,7 @@ decision_type dfs_next_turn(int16_t *route, int16_t steps, int16_t *prev_node, i
 		return TURN_AROUND;
 
 	} else if (*angle == 0 && next_direction == 270){
-		printf("dfs: angle before = %i\n", *angle);
 		*angle = (*angle + 270)%360;
-		printf("dfs: angle after = %i\n", *angle);
 		return TURN_RIGHT;
 
 	} else if (*angle == 270 && next_direction == 0){
@@ -218,14 +163,11 @@ decision_type dfs_next_turn(int16_t *route, int16_t steps, int16_t *prev_node, i
 		return STRAIGHT;
 
 	} else if (*angle > next_direction){
-		printf("dfs: angle before = %i\n", *angle);
 		*angle = (*angle + 270)%360;
-		printf("dfs: angle after = %i\n", *angle);
 		return TURN_RIGHT;
 
 	} else if (*angle < next_direction){
 		*angle = (*angle + 90)%360;
-		LED_Write(~LED_Read());
 		return TURN_LEFT;
 
 	} else {
@@ -238,13 +180,12 @@ int16_t dfs_turn_around(int16_t *route, int16_t steps, int16_t *prev_node, int16
 	decision_type decision;
 
 	current_node = calc_current_node(*prev_node, get_distance(), *angle);
-	printf("dfs_next: prev_node = %i, current node = %i\n", *prev_node, current_node);
-	if (counter == 0){
-		//LED_Write(1);
-		temp = 0;
-	} else {
-		temp = *counter;
-	}
+
+	#ifdef SIMULATION_H
+		printf("dfs_next: prev_node = %i, current node = %i\n", *prev_node, current_node);
+	#endif
+
+	temp = (counter == 0)? 0 : *counter;
 
 	for (i = temp; i < steps; i++){
 		if (*(route + i) == current_node){
@@ -256,23 +197,12 @@ int16_t dfs_turn_around(int16_t *route, int16_t steps, int16_t *prev_node, int16
 	printf("next_turn: current after = %i (%i, %i)\n", current_index, current_index%MAP_WIDTH, current_index/MAP_WIDTH);
 	// printf("next y = %i\n", *(route + current + 1)/MAP_WIDTH);
 
-	if (*(route + current_index + 1)/MAP_WIDTH < *(route + current_index)/MAP_WIDTH){	//North
-		next_direction = 90;
-	}else if (*(route + current_index + 1)/MAP_WIDTH > *(route + current_index)/MAP_WIDTH){	//South
-		next_direction = 270;
-	}else if (*(route + current_index + 1)%MAP_WIDTH > *(route + current_index)%MAP_WIDTH){	//East
-		next_direction = 0;
-	}else if (*(route + current_index + 1)%MAP_WIDTH < *(route + current_index)%MAP_WIDTH){	//West
-		next_direction = 180;
-	} else {
-		// printf("wrong next_direction\n");
-	}
-	// printf("INPUT ANGLE = %i\n", angle);
-	// printf("RELATIVE ANGLE = %i\n", next_direction);
+	next_direction = next_node_angle(route, current_index);
 
-	printf("CURRENT ANGLE = %i\n", *angle);
-	printf("REL_ANGLE = %i\n", next_direction);
-	
+	#ifdef SIMULATION_H
+		printf("CURRENT ANGLE = %i\n", *angle);
+		printf("REL_ANGLE = %i\n", next_direction);
+	#endif
 
 	if(abs(*angle - next_direction) == 180){
 		*prev_node = current_node;
@@ -351,11 +281,39 @@ int16_t round_angle(int16_t angle){
 	}
 }
 
+static int16_t next_node_angle(int16_t *route, int16_t current){
+	if (*(route + current + 1)/MAP_WIDTH < *(route + current)/MAP_WIDTH){	//North
+		return 90;
+	} else if (*(route + current + 1)/MAP_WIDTH > *(route + current)/MAP_WIDTH){	//South
+		return 270;
+	} else if (*(route + current + 1)%MAP_WIDTH > *(route + current)%MAP_WIDTH){	//East
+		return 0;
+	} else if (*(route + current + 1)%MAP_WIDTH < *(route + current)%MAP_WIDTH){	//West
+		return 180;
+	}
+}
+
+static decision_type turn_decision(int16_t current_angle, int16_t next_angle){
+	if(abs(current_angle - next_angle) == 180){
+		return TURN_AROUND;
+	} else if (current_angle == 0 && next_angle == 270){
+		return TURN_RIGHT;
+	} else if (current_angle == 270 && next_angle == 0){
+		return TURN_LEFT;
+	} else if (current_angle == next_angle){
+		return STRAIGHT;
+	} else if (current_angle > next_angle){
+		return TURN_RIGHT;
+	} else if (current_angle < next_angle){
+		return TURN_LEFT;
+	} else {
+		return STOP;
+	}
+}
+
 int16_t calc_current_node(int16_t prev_node, int16_t distance, int16_t angle){
 	int16_t prev_node_y = prev_node/MAP_WIDTH;
 
-
-	// printf("calc_cu: prev_node = %i, distance = %i, angle = %i\n", prev_node, distance, angle);
 	if (angle == 0){
 		return prev_node + distance/NODE_WIDTH_MM;
 

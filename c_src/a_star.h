@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <limits.h>
 
 #include "map.h"
 
@@ -30,7 +31,7 @@
 #define OPEN 1
 #define CLOSED 2
 
-int16_t a_star(int16_t *route, int16_t start, int16_t destination);
+int16_t a_star(int16_t *map, int16_t *addi_cost, int16_t *route, int16_t start, int16_t destination);
 
 
 
