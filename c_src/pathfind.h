@@ -20,9 +20,10 @@
 #include <stdint.h>
 #include <string.h>
 //#include "project.h"
-#include "a_star.h"
+#include "Astar.h"
 #include "dfs_traverse.h"
 #include "defines.h"
+#include "distance.h"
 
 
 
@@ -36,6 +37,10 @@
 int16_t find_path(uint8_t level, int16_t map[15][19], int16_t *route, int16_t start_x, int16_t start_y, int16_t dest_x, int16_t dest_y);
 
 decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int16_t angle, int16_t* counter);
+decision_type dfs_next_turn(int16_t *route, int16_t steps, int16_t *prev_node, int16_t *angle, int16_t *counter);
+
+int16_t turn_around(int16_t *route, int16_t steps, int16_t x, int16_t y, int16_t angle, int16_t *counter);
+int16_t dfs_turn_around(int16_t *route, int16_t steps, int16_t *prev_node, int16_t *angle, int16_t *counter);
 
 int16_t conv_location(int16_t x, int16_t y);
 
@@ -45,7 +50,7 @@ int8_t are_we_there_yet(int16_t current_x, int16_t current_y, int16_t dest_x, in
 int16_t round_angle(int16_t angle);
 int16_t turn_around(int16_t *route, int16_t steps, int16_t x, int16_t y, int16_t angle, int16_t *counter);
 
-
+int16_t calc_current_node(int16_t prev_node, int16_t distance, int16_t angle);
 
 
 #endif

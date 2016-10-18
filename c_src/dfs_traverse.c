@@ -15,7 +15,7 @@ int16_t dfs_traverse(int16_t *path, int16_t start){
 
 void addPath(int16_t *path){
 	if (food_count() == 0){return;}
-	printf("%d >> dXdY:(%d,%d) food:%d\n", path_i, dX, dY, food_count());
+	printf("%d >> food at %d (%d,%d) food:%d\n", path_i, dY*19+dX, dX, dY, food_count());
 	path[path_i] = convDigi(dY,dX); // add to list
 	t_map[convDigi(dY,dX)] = 2; // set to seen
 	path_i++;
