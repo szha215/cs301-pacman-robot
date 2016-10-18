@@ -4,7 +4,8 @@
 #include "map.h"
 #include <stdio.h>
 #include <stdlib.h>
-
-uint8_t is_vertex(uint16_t *node);
+#define MAP_WIDTH 19
+#define MAP_HEIGHT 15
+uint8_t is_vertex(uint16_t node);
 
 #endif

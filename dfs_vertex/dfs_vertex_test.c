@@ -12,12 +12,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "Astar.h"
-#include "pathfind.h"
+
 #include "map.h"
+#include "dfs_vertex.h"
+#include "pathfind.h"
 #include "defines.h"
 #include "dfs_traverse.h"
-#include "distance.h"
 
 
 struct State;
@@ -66,101 +66,42 @@ void p_decision(decision_type decision){
 		printf("decision = OUT_OF_BOUNDS\n");
 	}
 }
-
+uint16_t conv_to_cell(uint16_t x,uint16_t y){
+	return y*MAP_WIDTH + x;
+}
 int main(void){
 	int* mapp;
 	int16_t* route;
 	int i,j;
 	uint16_t steps = 0;
-	printf("\n================================================= start\n\n");
+
 
 	route = (int16_t*)malloc(MAP_WIDTH * MAP_HEIGHT * sizeof(int16_t));
-
-	//steps = astar(map, MAP_WIDTH, MAP_HEIGHT, route, 1*MAP_WIDTH+1, 13*MAP_WIDTH+17);
-	// steps = find_path(2, map, route, 63, 380, food_packets[2][0], food_packets[2][1]);
-	steps = find_path(1, map, route, 63, 361, food_packets[2][0], food_packets[2][1]);
-	//free(a);
-
-	printf("\n======================== DFS end\n");
-
-	printf("TOTAL STEPS = %d\n", steps);
-
+	steps = 
+	int vertex_counter = 0;
 	for (i = 0; i < 15; i++){
 		for (j = 0; j < 19; j++){
-			if (in_sett(route, steps, i*MAP_WIDTH+j)){
-				printf("%c", 'o');
-			} else if (map[i][j] == 1){
+			if (map[i][j] == 1){
 				printf("%c", '#');
 			} else {
-				printf("%c", ' ');
+				if(is_vertex(conv_to_cell(i,j))){
+					printf("$");
+					vertex_counter++;
+				}else{
+					printf("%c", ' ');
+				}
 			}
 		}
 		printf("\n");
 	}
-
-	for (i = 0; i < steps; i++){
-		if (*(route + i) == 136){
-			printf("node 136 found at route[%i]\n", i);
-		}
-	}
-
-	struct State cs;
-	cs.step_counter = 2;
-
-	struct State * cs_p = &cs;
+	printf("total vertices count: %d\n",vertex_counter);
 
 
-	int16_t x = 63;
-	int16_t y = 363;
-	int16_t angl = 90;
-	int16_t node = 0;
-	int16_t current_node = 135;
-	int16_t *current_node_p = &current_node;
-	//int16_t counter = 0;
-
-	//int16_t *counter_p = &counter;
-	decision_type decision = STRAIGHT;
-	int16_t turnaround;
-
-//	decision_type decision = next_turn(route, steps, x, y, angl, counter_p);
-	// turnaround = turn_around(route, steps, x, y, angl, &(cs_p->step_counter));
-	// printf("\nturn around? %i.  step_counter = %i\n", turnaround, cs_p->step_counter);
-
-
-	// turnaround = turn_around(route, steps, x+2, y, angl, &(cs_p->step_counter));
-	// printf("\nturn around? %i.  step_counter = %i\n", turnaround, cs_p->step_counter);
-
-
-	// First intersection
-	x = 173;
-	y = 363;
-	angl = 0;
-	node = conv_location(x, y);
-	// decision = next_turn(route, steps, x, y, angl, &(cs_p->step_counter));
-	
-	for (i = 0; i < 20; i++){
-		decision = dfs_next_turn(route, steps, current_node_p, &angl, &(cs_p->step_counter));
-		printf("next turn decision at %i (%i, %i), step_counter = %i, ", *current_node_p, node%MAP_WIDTH, node/MAP_WIDTH,cs_p->step_counter);
-		p_decision(decision);	
-		printf("\n");
-
-
-		if (dfs_turn_around(route, steps, current_node_p, &angl, &(cs_p->step_counter))){
-			printf("TUUUUURRNRNRNRNRNRNRN AARRORUUNNNDNDNDNDNDDDDDD at %i \n", cs_p->step_counter);
-		}
-	}
-	
-
-	// decision = dfs_next_turn(route, steps, &angl, current_node_p, &(cs_p->step_counter));
-	// printf("\nnext turn decision at %i (%i, %i), step_counter = %i, ", node, node%MAP_WIDTH, node/MAP_WIDTH,cs_p->step_counter);
-	// p_decision(decision);
-
-
-	// printf("\nnodes= %i\n", calc_current_node(134, get_distance(), 0));
-
-	// printf("\nENUM SIZE = %i\n", sizeof(astar_status));
 
 	free(route);
+
+	
+	
 	return 0;
 }
 

@@ -1,11 +1,18 @@
+OPT = -O0
+
+
+
+
 default:
-	gcc Astar.c Astar_test.c pathfind.c map.c dfs_traverse.c distance.c -o maze.exe -w
+	gcc $(OPT) -o maze dfs_vertex_test.c map.c dfs_vertex.c pathfind.c
+
 
 clean:
-	del maze.exe
+	rm -f *.o
+	rm maze
 
 run:
-	./maze.exe
+	./maze
 
 all: clean default run
 
