@@ -12,7 +12,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "Astar.h"
+#include "a_star.h"
 #include "pathfind.h"
 #include "map.h"
 #include "defines.h"
@@ -78,7 +78,7 @@ int main(void){
 
 	//steps = astar(map, MAP_WIDTH, MAP_HEIGHT, route, 1*MAP_WIDTH+1, 13*MAP_WIDTH+17);
 	// steps = find_path(2, map, route, 63, 380, food_packets[2][0], food_packets[2][1]);
-	steps = find_path(1, map, route, 63, 361, food_packets[2][0], food_packets[2][1]);
+	steps = find_path(2, map, route, 63, 361, food_packets[2][0], food_packets[2][1]);
 	//free(a);
 
 	printf("\n======================== DFS end\n");
@@ -138,7 +138,7 @@ int main(void){
 	node = conv_location(x, y);
 	// decision = next_turn(route, steps, x, y, angl, &(cs_p->step_counter));
 	
-	for (i = 0; i < 20; i++){
+	for (i = 0; i < 0; i++){
 		decision = dfs_next_turn(route, steps, current_node_p, &angl, &(cs_p->step_counter));
 		printf("next turn decision at %i (%i, %i), step_counter = %i, ", *current_node_p, node%MAP_WIDTH, node/MAP_WIDTH,cs_p->step_counter);
 		p_decision(decision);	

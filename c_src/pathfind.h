@@ -19,8 +19,12 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-//#include "project.h"
-#include "Astar.h"
+#include "simulation.h"
+#ifndef SIMULATION_H
+	#include "project.h"
+#endif
+#include "a_star.h"
+
 #include "dfs_traverse.h"
 #include "defines.h"
 #include "distance.h"
@@ -34,7 +38,8 @@
 #define MAP_WIDTH_PIXEL 1024.0
 #define MAP_HEIGHT_PIXEL 768.0
 
-int16_t find_path(uint8_t level, int16_t map[15][19], int16_t *route, int16_t start_x, int16_t start_y, int16_t dest_x, int16_t dest_y);
+int16_t find_path(uint8_t level, int16_t map[15][19], int16_t *route, int16_t start_x, int16_t start_y, int16_t dest_node_x, int16_t dest_node_y);
+int16_t find_path_ghost(uint8_t level, int16_t map[15][19], int16_t *route, int16_t start_x, int16_t start_y, int16_t dest_node_x, int16_t dest_node_y);
 
 decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int16_t angle, int16_t* counter);
 decision_type dfs_next_turn(int16_t *route, int16_t steps, int16_t *prev_node, int16_t *angle, int16_t *counter);
