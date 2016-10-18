@@ -1,4 +1,4 @@
- /* ========================================
+  /* ========================================
  *
  * Copyright YOUR COMPANY, THE YEAR
  * All Rights Reserved
@@ -81,8 +81,8 @@ void calculate(struct State* state,motion_type current_motion,data_main *rf_data
     // }
     clear_route(route,400);
     // *(state->current_node) = conv_location(rf_data->robot_xpos,rf_data->robot_ypos);
-    *(state->current_node) = conv_location(173,363);
-    *(state->angle) = 0;
+    state->current_node = conv_location(173,363);
+    state->angle = 0;
     // *(state->angle) = round_angle(rf_data->robot_orientation/10);
       // int16_t x, y, angl;
 
@@ -152,7 +152,7 @@ void execute(struct State* state,motion_type current_motion,data_main *rf_data){
         // if(turn_around(route,steps,rf_data->robot_xpos,rf_data->robot_ypos,rf_data->robot_orientation,&(state->step_counter))){
             // LED_Write(1);
         state->fsm_state = STATE_IN_PROGRESS;
-        if(dfs_turn_around(route,steps,state->current_node,state->angle,&(state->step_counter))){
+        if(dfs_turn_around(route,steps,&(state->current_node),&(state->angle),&(state->step_counter))){
             state->fsm_state = WAIT_TURN_AROUND;
             state->next_state = update;
         } 
@@ -195,7 +195,7 @@ void update(struct State* state,motion_type current_motion,data_main *rf_data){
     
     
     if(state->level == 1){
-        next_decision = dfs_next_turn(route,steps,state->current_node,state->angle,&(state->step_counter));
+        next_decision = dfs_next_turn(route,steps,&(state->current_node),&(state->angle),&(state->step_counter));
         state->current_decision = next_decision;
         state->fsm_state = STATE_UPDATED;
         state->next_state = execute;
