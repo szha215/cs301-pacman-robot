@@ -115,7 +115,7 @@ void m_straight_slow(){
 }
 
 void m_adjust_left(){
-    PWM_M1_WriteCompare(M1_FORWARD+1);// + cmp_val_m1/M1_FORWARD);
+    PWM_M1_WriteCompare(M1_FORWARD+2);// + cmp_val_m1/M1_FORWARD);
     PWM_M2_WriteCompare(STOP_MOTOR-1);// + cmp_val_m2/M2_FORWARD_SLOW);
     // PWM_M1_WriteCompare(PWM_M1_ReadCompare());
     // PWM_M2_WriteCompare(PWM_M2_ReadCompare() - 5);
@@ -139,13 +139,13 @@ void rf_adjust_right(){
 }
 
 void m_turn_left(){
-    PWM_M1_WriteCompare(M1_FORWARD+3);
-    PWM_M2_WriteCompare(M2_BACKWARD-3);
+    PWM_M1_WriteCompare(M1_FORWARD+2);
+    PWM_M2_WriteCompare(M2_BACKWARD-2);
 }
 
 void m_turn_right(){
-    PWM_M1_WriteCompare(M1_BACKWARD-3);
-    PWM_M2_WriteCompare(M2_FORWARD+3);
+    PWM_M1_WriteCompare(M1_BACKWARD-2);
+    PWM_M2_WriteCompare(M2_FORWARD+2);
 }
 
 

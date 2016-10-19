@@ -64,7 +64,7 @@ CY_ISR(timer_isr){
     }
     
 
-    if(timer_ovrflw > 6){
+    if(timer_ovrflw > 7){
         turned = 0;
     }
 
@@ -131,6 +131,7 @@ void motion_straight(struct motion_state* m_state,decision_type decision, update
             Timer_TS_Stop();
             if(s_l == IN_LINE || s_r == IN_LINE){
                 m_stop();
+                m_state->current_motion = AT_INTERSECTION;
                 m_state->next_state = motion_stop_buffer;
             }
         }
@@ -249,11 +250,11 @@ void motion_turn_left(struct motion_state* m_state,decision_type decision, updat
     
     if(s_fr == IN_LINE && s_fl == IN_LINE){
         m_straight();
-        clear_quad();
         m_state->next_state = motion_straight;
     }
     else{
         m_turn_left();
+        
         m_state->next_state = motion_turn_left;
     }
 }
@@ -267,11 +268,11 @@ void motion_turn_right(struct motion_state* m_state,decision_type decision, upda
     }
     if(s_fr == IN_LINE && s_fl == IN_LINE){
         m_straight();
-        clear_quad();
         m_state->next_state = motion_straight;
     }
     else{
         m_turn_right();
+        
         m_state->next_state = motion_turn_right;
     }
 }
