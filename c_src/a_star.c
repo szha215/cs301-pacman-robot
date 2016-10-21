@@ -14,7 +14,7 @@
 #include "simulation.h"
 
 static int16_t is_open_empty(int16_t *map_status, int16_t size);
-static int16_t next_current(int16_t *map_status, int16_t *g_cost, int16_t destination, int16_t size);
+static int16_t next_current(int16_t *map_status, int16_t *g_cost, int16_t *addi_cost, int16_t destination, int16_t size);
 static int16_t update_surrounding(int16_t *map, int16_t *map_status, int16_t *g_cost, int16_t *parent, int16_t current);
 static int16_t trace_back(int16_t *traced_route, int16_t *parent, int16_t destination, int16_t start);
 static void flip_trace(int16_t *source, int16_t *target, int16_t size);
@@ -78,7 +78,7 @@ int16_t a_star(int16_t *map, int16_t *addi_cost, int16_t *route, int16_t start, 
 
 
 	while(!is_open_empty(map_status, MAP_HEIGHT*MAP_HEIGHT)){
-		current = next_current(map_status, g_cost, destination, MAP_HEIGHT*MAP_HEIGHT);
+		current = next_current(map_status, g_cost, addi_cost, destination, MAP_HEIGHT*MAP_HEIGHT);
 		printf("current = %i\n", current);
 		if (current == destination){
 			#ifdef SIMULATION_H
@@ -130,7 +130,7 @@ static int16_t is_open_empty(int16_t *map_status, int16_t size){
 	return 1;
 }
 
-static int16_t next_current(int16_t *map_status, int16_t *g_cost, int16_t destination, int16_t size){
+static int16_t next_current(int16_t *map_status, int16_t *addi_cost, int16_t *g_cost, int16_t destination, int16_t size){
 	int16_t f_cost_min = SHRT_MAX, f_cost;	// SHRT_MAX = 32767
 	int16_t h_cost_next;
 	int16_t current_next, current_next_best;
@@ -139,7 +139,7 @@ static int16_t next_current(int16_t *map_status, int16_t *g_cost, int16_t destin
 	for (i = 0; i < size; i++){
 		if (*(map_status + i) == OPEN){
 			h_cost_next = manhattan(i, destination);
-			f_cost = *(g_cost + i) + h_cost_next;
+			f_cost = *(g_cost + i) + *(addi_cost + i) + h_cost_next;
 
 			if (f_cost < f_cost_min){
 				f_cost_min = f_cost;

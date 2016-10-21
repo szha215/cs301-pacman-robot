@@ -15,10 +15,6 @@
 
 
 void init_motor_control(){
-    // motor_parameters = init_motor_params(predef_velocity,predef_distance);
-    // pid_controller_m1 = pid_init(0.05,motor_parameters->desired_count);
-    // pid_controller_m2 = pid_init(0.05,motor_parameters->desired_count);
-    //quad_parameters = init_quad_params();
     cmp_val_m1 = 150;
     cmp_val_m2 = 150;
     M1_SLW_Write(1);
@@ -47,10 +43,6 @@ motor_params* init_motor_params(uint8 predef_velocity, uint16 predef_distance){
 
 
 
-// quad_params* init_quad_params(){
-//     quad_params *quad_params = calloc(1,sizeof(quad_params));
-//     return quad_params;
-// }
 
 // Converts centimeter per second velocity to number of quadrature counts per
 // PID update period
@@ -115,27 +107,23 @@ void m_straight_slow(){
 }
 
 void m_adjust_left(){
-    PWM_M1_WriteCompare(M1_FORWARD+2);// + cmp_val_m1/M1_FORWARD);
-    PWM_M2_WriteCompare(STOP_MOTOR-1);// + cmp_val_m2/M2_FORWARD_SLOW);
-    // PWM_M1_WriteCompare(PWM_M1_ReadCompare());
-    // PWM_M2_WriteCompare(PWM_M2_ReadCompare() - 5);
+    PWM_M1_WriteCompare(M1_FORWARD+2);
+    PWM_M2_WriteCompare(STOP_MOTOR-1);
 }
 
 void m_adjust_right(){
-    PWM_M1_WriteCompare(STOP_MOTOR-1);// + cmp_val_m1/M1_FORWARD_SLOW);
-    PWM_M2_WriteCompare(M2_FORWARD+1);// + cmp_val_m2/M2_FORWARD_SLOW);
-    // PWM_M1_WriteCompare(PWM_M1_ReadCompare() - 5);
-    // PWM_M2_WriteCompare(PWM_M2_ReadCompare());
+    PWM_M1_WriteCompare(STOP_MOTOR-1);
+    PWM_M2_WriteCompare(M2_FORWARD+1);
 }
 
 void rf_adjust_left(){
-    PWM_M1_WriteCompare(M1_FORWARD);// + cmp_val_m1/M1_FORWARD);
-    PWM_M2_WriteCompare(M2_FORWARD_SLOW);// + cmp_val_m2/M2_FORWARD_SLOW);
+    PWM_M1_WriteCompare(M1_FORWARD);
+    PWM_M2_WriteCompare(M2_FORWARD_SLOW);
 }
 
 void rf_adjust_right(){
-    PWM_M1_WriteCompare(M1_FORWARD_SLOW);// + cmp_val_m1/M1_FORWARD_SLOW);
-    PWM_M2_WriteCompare(M2_FORWARD);// + cmp_val_m2/M2_FORWARD_SLOW);
+    PWM_M1_WriteCompare(M1_FORWARD_SLOW);
+    PWM_M2_WriteCompare(M2_FORWARD);
 }
 
 void m_turn_left(){
@@ -166,13 +154,6 @@ void m_straight_pid(){
         set_quad_dec_flag(0);
 
     }
-    
-        
-        
-        
-    // if(quad_dec_done == 0){
-    //     LED_Write(~LED_Read());
-    // }
 
 }
 

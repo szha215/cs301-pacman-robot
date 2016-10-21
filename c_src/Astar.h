@@ -31,7 +31,7 @@
 
 typedef enum {UNKNOWN, OPEN, CLOSED} astar_status;
 
-int16_t astar(int16_t map[15][19], int16_t width, int16_t height, int16_t *route, int16_t start, int16_t destination);
+int16_t astar(int16_t map[15][19], int16_t *addi_cost, int16_t *route, int16_t start, int16_t destination);
 
 // static void init_astar(int16_t *open, int16_t *closed, int16_t *parent, int16_t *g_cost, int16_t size);
 
