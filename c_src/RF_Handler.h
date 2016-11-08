@@ -29,7 +29,7 @@
 static volatile uint8 indexCount = 0;
 static volatile uint8 endCount = 0;
 char rxString[RXSTRINGSIZE];
-static volatile  rx_recieved = 0;
+static volatile  int rx_recieved = 0;
 static volatile uint8 rx_handled = 0;
 
 // struct define with all the data

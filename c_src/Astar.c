@@ -12,27 +12,20 @@
 
 #include "Astar.h"
 //#include "project.h"
-//#include "project.h"
+// #include "project.h"
 
 
 static void init_astar(int16_t *open, int16_t *closed, int16_t *parent, int16_t *g_cost, int16_t size);
-
 static uint8_t is_empty(int16_t *list, int16_t size);
-
-static int16_t next_current(int16_t *open, int16_t *g_cost, int16_t destination, int16_t size);
-
+static int16_t next_current(int16_t *open, int16_t *g_cost, int16_t *addi_cost, int16_t destination, int16_t size);
 static void add_closed(int16_t *closed, int16_t location);
-
 static uint8_t add_open(int16_t *map, int16_t *open, int16_t *closed, int16_t *g_cost, int16_t *parent, int16_t current);
-
 static uint8_t traceback(int16_t *parent, int16_t *traceback, int16_t destination, int16_t start);
-
 static void flip_array(int16_t *source, int16_t *target, int16_t size);
-
 static int16_t manhattan(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
 
  
-int16_t astar(int16_t map[15][19], int16_t width, int16_t height, int16_t *route, int16_t start, int16_t destination){
+int16_t astar(int16_t map[15][19], int16_t *addi_cost, int16_t *route, int16_t start, int16_t destination){
 	int16_t *open, *closed, *parent, *g_cost, *traced_route;
 	int16_t current;
 	uint16_t i, steps;
@@ -45,7 +38,7 @@ int16_t astar(int16_t map[15][19], int16_t width, int16_t height, int16_t *route
 	} else if (start > MAP_WIDTH*MAP_HEIGHT || start < 0){
 		// printf("INVALID START\n");
 		return -2;
-	} else if (*(&map + destination) == 1){
+	} else if (*(map + destination) == 1){
 		// printf("INVALID DESTINATION\n");
 		return -3;
 	} else if (*(map + start) == 1){
@@ -59,7 +52,6 @@ int16_t astar(int16_t map[15][19], int16_t width, int16_t height, int16_t *route
 	parent = (int16_t*)malloc(285 * sizeof(int16_t));
 	g_cost = (int16_t*)malloc(285 * sizeof(int16_t));
 	traced_route = (int16_t*)malloc(285 * sizeof(int16_t));
-
 
 
 	init_astar(open, closed, parent, g_cost, 285);
@@ -92,7 +84,7 @@ int16_t astar(int16_t map[15][19], int16_t width, int16_t height, int16_t *route
 	*(g_cost + start) = 0;
 
 	while (!is_empty(open, 285)){
-		current = next_current(open, g_cost, destination, 285);
+		current = next_current(open, g_cost, addi_cost, destination, 285);
 		// printf("current = %i, %i\n", current%19, current/19);
 		add_closed(closed, current);
 		add_open(map, open, closed, g_cost, parent, current);
@@ -137,10 +129,9 @@ int16_t astar(int16_t map[15][19], int16_t width, int16_t height, int16_t *route
 	return steps;
 }
 
-static int16_t next_current(int16_t *open, int16_t *g_cost, int16_t destination, int16_t size){
+static int16_t next_current(int16_t *open, int16_t *g_cost, int16_t *addi_cost, int16_t destination, int16_t size){
 	int16_t f_cost_min = SHRT_MAX;	// 32767
 	int16_t f_cost = 0;
-	int16_t nextCurrent = 0;
 	int16_t bestCurrent = 0;
 
 	int16_t nextCurrentX = 0;
@@ -163,7 +154,7 @@ static int16_t next_current(int16_t *open, int16_t *g_cost, int16_t destination,
 			bestCurrentX = bestCurrent % 19;
 			bestCurrentY = bestCurrent / 19;
 			next_manhattan = manhattan(nextCurrentX, nextCurrentY, destinationX, destinationY);
-			f_cost =  *(g_cost + i) + next_manhattan;
+			f_cost =  *(g_cost + i) + *(addi_cost + i) + next_manhattan;
 			if (f_cost < f_cost_min){
 				f_cost_min = f_cost;
 				bestCurrent = i;
@@ -211,9 +202,7 @@ static void add_closed(int16_t *closed, int16_t location){
 }
 
 static uint8_t add_open(int16_t *map, int16_t *open, int16_t *closed, int16_t *g_cost, int16_t *parent, int16_t current){
-	int16_t i;
 	int16_t o_count = 0, temp = 0;
-	int16_t g;
 
 	// North
 	temp = current - MAP_WIDTH;

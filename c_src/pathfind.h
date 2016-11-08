@@ -34,7 +34,20 @@
 #define MAP_WIDTH_PIXEL 1024.0
 #define MAP_HEIGHT_PIXEL 768.0
 
+#define HOZ_OFFSET 0.15
+#define VER_OFFSET 0.12
+
+#define GHOSTS 3
+#define GHOST_COST 100
+#define GHOST_COST_SURROUD 10
+
 int16_t find_path(uint8_t level, int16_t map[15][19], int16_t *route, int16_t start_x, int16_t start_y, int16_t dest_x, int16_t dest_y);
+int16_t find_path_ghost(uint8_t level, int16_t map[15][19], int16_t *route, 
+						int16_t start_x, int16_t start_y, int16_t dest_node_x, int16_t dest_node_y,
+						uint16_t g1_x, uint16_t g1_y,
+						uint16_t g2_x, uint16_t g2_y,
+						uint16_t g3_x, uint16_t g3_y);
+
 
 decision_type next_turn(int16_t *route, int16_t steps, int16_t x, int16_t y, int16_t angle, int16_t* counter);
 decision_type dfs_next_turn(int16_t *route, int16_t steps, int16_t *prev_node, int16_t *angle, int16_t *counter);
@@ -42,7 +55,7 @@ decision_type dfs_next_turn(int16_t *route, int16_t steps, int16_t *prev_node, i
 int16_t turn_around(int16_t *route, int16_t steps, int16_t x, int16_t y, int16_t angle, int16_t *counter);
 int16_t dfs_turn_around(int16_t *route, int16_t steps, int16_t *prev_node, int16_t *angle, int16_t *counter);
 
-int16_t conv_location(int16_t x, int16_t y);
+int16_t conv_location(int16_t x, int16_t y, int16_t angle);
 
 void clear_route(int16_t *route, int16_t steps);
 
@@ -53,10 +66,10 @@ int16_t turn_around(int16_t *route, int16_t steps, int16_t x, int16_t y, int16_t
 int16_t calc_current_node(int16_t prev_node, int16_t distance, int16_t angle);
 
 uint8_t is_vertex(const uint16_t node);
-uint16_t* get_vertex_list(const int16_t* route, const int16_t steps, int16_t *vertex_count);
-uint16_t get_vertex_list_length(const int16_t* route, const int16_t steps);
-uint16_t in_set(const uint16_t* array, const uint16_t length, const uint16_t element);
-
+int16_t get_vertex_list(const int16_t* route, const int16_t steps, int16_t *vertex_list);
+int16_t get_vertex_list_length(const int16_t* route, const int16_t steps);
+int16_t in_set(const int16_t* array, const uint16_t length, const uint16_t element);
+int16_t get_shortest_vertex(const int16_t* vertex_list,int16_t *route,const int16_t list_length,const int16_t current_node);
 
 #endif
 

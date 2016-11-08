@@ -49,6 +49,8 @@ struct State{
    	int16_t steps;
    	int16_t count;
    	int16_t step_counter;
+      int16_t vertex_index;
+      int16_t vertex_list_length;
    	uint8 food_index;
    	// data_main *rf_data;
 };
